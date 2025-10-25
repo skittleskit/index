@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>For Antratica — A Little Surprise</title>
+  <style>
+    :root{
+      --bg:#001428; /* midnight blue */
+      --glow: #00e6ff; /* cyan glow */
+      --muted: rgba(255,255,255,0.85);
+      --accent: rgba(0,230,255,0.12);
+      --card: rgba(255,255,255,0.04);
+      --radius: 18px;
+      --maxw:900px;
+      --ff: 'Helvetica Neue', Arial, sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:var(--ff);background:radial-gradient(ellipse at 10% 10%, rgba(0,230,255,0.04), transparent 10%), linear-gradient(180deg,var(--bg) 0%, #001a36 100%);color:var(--muted)}
+    .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:28px}
+    .card{width:100%;max-width:var(--maxw);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--radius);padding:34px;box-shadow:0 10px 30px rgba(0,0,0,0.45);backdrop-filter: blur(6px);}
+    .slides{position:relative;overflow:hidden;border-radius:12px;background:transparent;padding:26px;height:58vh;min-height:420px;display:flex;align-items:center;justify-content:center}
+    .slide{position:absolute;inset:0;padding:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transform:translateY(16px) scale(0.99);transition:all 420ms cubic-bezier(.2,.9,.2,1)}
+    .slide.active{opacity:1;transform:translateY(0) scale(1)}
+    .small{font-size:14px;opacity:0.9}
+    .typing{font-size:22px;line-height:1.45;max-width:820px;text-align:center}
+    .emoji{font-size:36px;margin-top:16px}
+
+    .controls{display:flex;align-items:center;justify-content:space-between;margin-top:18px}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--muted);padding:10px 16px;border-radius:12px;cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(90deg, rgba(0,230,255,0.08), rgba(0,230,255,0.02));box-shadow:0 6px 20px rgba(0,230,255,0.04);border:1px solid rgba(0,230,255,0.14)}
+    .progress{height:8px;background:rgba(255,255,255,0.03);border-radius:999px;overflow:hidden;margin-left:14px;flex:1}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--glow), #6ff7ff);width:0%}
+
+    h1.name{font-weight:700;font-size:34px;letter-spacing:0.2px;margin:6px 0}
+    .sub{font-size:16px;opacity:0.95}
+
+    /* final reveal */
+    .final-title{font-size:44px;font-weight:800;text-align:center;letter-spacing:-0.6px;color:var(--glow);text-shadow:0 6px 40px rgba(0,230,255,0.06)}
+    .final-card{padding:28px;border-radius:12px;background:linear-gradient(180deg, rgba(0,0,0,0.18), rgba(255,255,255,0.02));box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+
+    /* responsive */
+    @media(max-width:640px){.card{padding:18px}.typing{font-size:18px}.final-title{font-size:28px}.slides{padding:18px;height:62vh}}
+
+    /* small star-like sparkles */
+    .spark{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--glow);opacity:0.12;filter:blur(6px);}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="main">
+      <div class="slides" id="slides">
+
+        <!-- Slide 1: Soft welcome + typing animation -->
+        <section class="slide active" data-index="0" id="s0">
+          <div class="typing" id="typing1"></div>
+          <div class="emoji">✨🌙</div>
+        </section>
+
+        <!-- Slide 2: The bond -->
+        <section class="slide" data-index="1" id="s1">
+          <h1 class="name">To my beautiful friend, <span style="color:var(--glow)">Antratica</span></h1>
+          <p class="typing">There are some people who arrive and quietly rearrange your world. You are one of those — a soft presence, an honest laugh, a home in a thousand miles.</p>
+          <div class="emoji">💙</div>
+        </section>
+
+        <!-- Slide 3: Inside joke / connection (editable) -->
+        <section class="slide" data-index="2" id="s2">
+          <div class="typing">Remember that time we <strong id="joke">[your inside joke goes here]</strong>? I keep replaying it — still makes me grin like an idiot. Little things like that — they stay.</div>
+          <div class="small" style="margin-top:18px">(Tip: edit the <code>id="joke"</code> text in the file to add your personal touch)</div>
+        </section>
+
+        <!-- Slide 4: Memories / space for photos (placeholder) -->
+        <section class="slide" data-index="3" id="s3">
+          <div class="final-card" style="max-width:820px;text-align:center">
+            <p class="typing">Here are some moments I wish I could pack into one room: late-night talks, your stubborn wisdom, tiny shared playlists, and the way you make an ordinary day feel like a scene from a movie.</p>
+            <p class="small">(To add photos: put images into the same folder and replace the placeholder below.)</p>
+            <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+              <div style="width:120px;height:80px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.12));display:flex;align-items:center;justify-content:center">Photo</div>
+              <div style="width:120px;height:80px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.12));display:flex;align-items:center;justify-content:center">Photo</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FINAL Slide: Big reveal -->
+        <section class="slide" data-index="4" id="s4">
+          <div style="text-align:center">
+            <div class="final-title">Happy Birthday, Antratica 💙</div>
+            <div style="margin-top:14px;font-weight:600;opacity:0.95">May your day be exactly as warm, wild and bright as you are.</div>
+          </div>
+        </section>
+
+        <!-- decorative sparks -->
+        <div class="spark" style="left:8%;top:12%;width:8px;height:8px;opacity:0.08"></div>
+        <div class="spark" style="right:6%;top:20%;width:6px;height:6px;opacity:0.06"></div>
+        <div class="spark" style="left:40%;bottom:10%;width:6px;height:6px;opacity:0.06"></div>
+
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="prev">← Back</button>
+        <div style="display:flex;align-items:center;width:100%;max-width:560px">
+          <div style="margin-left:12px;display:flex;flex-direction:column;width:100%">
+            <div style="display:flex;align-items:center;justify-content:center;margin-bottom:8px;gap:8px">
+              <div class="sub">Slide <span id="cur">1</span> / <span id="tot">5</span></div>
+            </div>
+            <div class="progress" aria-hidden><i id="bar"></i></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn" id="next">Next →</button>
+          <button class="btn primary" id="reveal" title="Jump to final">Reveal</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- lightweight scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script>
+    /* --- Simple slide manager --- */
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const tot = slides.length;
+    const curEl = document.getElementById('cur');
+    const totEl = document.getElementById('tot');
+    const bar = document.getElementById('bar');
+    let idx = 0;
+    totEl.textContent = tot;
+
+    function show(i){
+      slides.forEach(s=>s.classList.remove('active'));
+      slides[i].classList.add('active');
+      idx = i;
+      curEl.textContent = i+1;
+      bar.style.width = Math.round(((i+1)/tot)*100) + '%';
+      // special trigger for final slide
+      if(slides[i].id === 's4'){
+        // confetti once
+        runConfetti();
+      }
+    }
+
+    document.getElementById('next').addEventListener('click', ()=> show(Math.min(tot-1, idx+1)));
+    document.getElementById('prev').addEventListener('click', ()=> show(Math.max(0, idx-1)));
+    document.getElementById('reveal').addEventListener('click', ()=> show(tot-1));
+
+    // initial typing for the welcome slide
+    const welcome = "Hey... it's you. I had to make something small for you — nothing fancy, just a pocket of our little world.";
+    const tEl = document.getElementById('typing1');
+    let p=0;
+    function typeStep(){
+      if(p <= welcome.length){
+        tEl.textContent = welcome.slice(0,p) + (p % 2 ? '|' : '');
+        p++;
+        setTimeout(typeStep, 36 + Math.random()*34);
+      } else {
+        tEl.textContent = welcome;
+      }
+    }
+    setTimeout(typeStep, 600);
+
+    // confetti utility (uses canvas-confetti)
+    let confettiFired = false;
+    function runConfetti(){
+      if(confettiFired) return; confettiFired=true;
+      // burst and then gentle rain
+      confetti({particleCount: 40, spread: 120, origin:{y:0.2}});
+      setTimeout(()=> confetti({particleCount: 60, spread: 160, origin:{y:0.1}}), 350);
+      setTimeout(()=> confetti({particleCount: 120, spread: 260, gravity:0.6, origin:{y:0.1}}), 950);
+    }
+
+    // keyboard navigation
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'ArrowRight') document.getElementById('next').click();
+      if(e.key === 'ArrowLeft') document.getElementById('prev').click();
+    });
+
+    // small mobile hint: tap screen to go next
+    document.getElementById('slides').addEventListener('click', ()=> show(Math.min(tot-1, idx+1)));
+
+    // make text elements editable easily: look for elements with id and change them in the file
+  </script>
+</body>
+</html>
