@@ -8,11 +8,11 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
-  <!-- confetti lib -->
+  <!-- Confetti library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js" defer></script>
 
   <style>
-    :root{
+    :root {
       --bg-paper: #fbf7f3;
       --paper-edge: #efeae3;
       --ink: #222023;
@@ -23,100 +23,276 @@
       --radius: 14px;
       --hand: "Patrick Hand", "Segoe UI", Arial, sans-serif;
       --serif: "Libre Baskerville", Georgia, serif;
-      --slide-height: 66vh;
+      --slide-height: 72vh;
       --gap: 18px;
       --mobile-break: 760px;
     }
 
-    /* base reset */
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:
-      linear-gradient(180deg, #f7f4ef 0%, #fbf8f4 100%);
-      color:var(--ink); font-family:var(--hand); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: linear-gradient(180deg, #f7f4ef 0%, #fbf8f4 100%);
+      color: var(--ink);
+      font-family: var(--hand);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* wrapper/book */
-    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
-    .book{width:100%;max-width:var(--maxw);background:linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.98));border-radius:12px;padding:22px;box-shadow:0 26px 60px rgba(12,12,15,0.10), inset 0 1px 0 rgba(255,255,255,0.6);display:flex;flex-direction:column;gap:var(--gap);position:relative;overflow:visible}
-
-    /* header */
-    .header { display:flex;align-items:center;gap:12px }
-    .tape { width:120px;height:42px;background:linear-gradient(90deg,#f1dcbf,#f7e9d0);border-radius:6px;box-shadow:0 6px 16px rgba(0,0,0,0.06);transform:rotate(-6deg);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--muted);font-family:var(--serif);font-size:13px }
-    .title { font-size:18px;color:var(--muted);font-family:var(--serif) }
-
-    /* slides container */
-    .slides { position:relative; display:flex; align-items:center; justify-content:center; min-height:var(--slide-height); padding:16px }
-    .paper { width:100%; max-width:860px; background:linear-gradient(180deg,#fff 0%, #fffcfb 100%); border-radius:12px; padding:22px; box-shadow:0 8px 26px rgba(18,18,18,0.06); border:1px solid var(--paper-edge); position:relative; overflow:hidden; }
-
-    .paper::before{ content:""; position:absolute; inset:0; background-image: radial-gradient(circle at 10% 15%, rgba(0,0,0,0.02) 0px, transparent 22%), linear-gradient(90deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01)); opacity:0.5; pointer-events:none; }
-
-    /* slide layers — use display none to avoid stacked visible text */
-    .slide { position:absolute; inset:0; padding:20px; display:none; flex-direction:column; gap:10px; align-items:center; justify-content:center; text-align:center; }
-    .slide.active { display:flex; z-index:3; animation: slideIn 420ms cubic-bezier(.22,.9,.3,1); }
-    @keyframes slideIn { from { transform: translateY(10px); opacity:0 } to { transform: translateY(0); opacity:1 } }
-
-    /* content styles */
-    .content { max-width:740px; text-align:left; font-size:18px; line-height:1.6; color:var(--ink); padding:6px 4px; }
-    .long { max-height: calc(var(--slide-height) - 120px); overflow-y:auto; padding-right:12px; -webkit-overflow-scrolling: touch; }
-
-    h1.head { font-size:28px; margin:8px 0; color:var(--ink); font-family:var(--hand) }
-    p.note { font-size:15px; color:var(--muted) }
-
-    /* doodles and tape */
-    .doodles { position:absolute; right:14px; top:12px; width:140px; height:140px; pointer-events:none; opacity:0.95; transform:rotate(-6deg) }
-    .corner-tape { position:absolute; left:14px; top:6px; width:84px; height:34px; background:linear-gradient(90deg,#f3dcbf,#f8ead0); border-radius:6px; transform:rotate(-6deg); box-shadow:0 8px 14px rgba(0,0,0,0.05); display:flex;align-items:center;justify-content:center;font-family:var(--serif); color:#5b4d3a; font-size:12px }
-
-    /* controls */
-    .controls { display:flex; gap:10px; align-items:center; justify-content:space-between; }
-    .left-controls { display:flex; gap:8px; align-items:center }
-    .btn { background:#fff; border:1px solid rgba(0,0,0,0.06); padding:10px 14px; border-radius:10px; font-family:var(--hand); cursor:pointer; box-shadow:0 6px 18px rgba(11,12,13,0.04); transition: transform 180ms, box-shadow 180ms }
-    .btn:hover { transform:translateY(-3px); box-shadow:0 18px 36px rgba(0,0,0,0.07) }
-    .btn.ghost { background:transparent; border:none; color:var(--muted) }
-    .dots { display:flex; gap:8px; align-items:center }
-    .dot { width:9px; height:9px; background:#e7e3dd; border-radius:50%; box-shadow: inset 0 -2px 0 rgba(0,0,0,0.06); transition: transform 200ms, background 200ms }
-    .dot.active { background:var(--heart); transform:scale(1.15); box-shadow: 0 6px 18px rgba(255,107,138,0.12) }
-
-    .final-title { font-size:36px; color:var(--heart); font-weight:700; text-shadow:0 6px 20px rgba(255,107,138,0.06) }
-    .final-sub { font-size:17px; color:var(--muted); margin-top:8px }
-
-    .particles { position:absolute; inset:0; pointer-events:none; z-index:2 }
-    .confetti { position:absolute; inset:0; pointer-events:none; z-index:9999 }
-
-    .writing { white-space:pre-wrap; border-right:2px solid rgba(0,0,0,0.08); animation:caret 1s steps(1) infinite }
-    @keyframes caret { 0% { border-color:rgba(0,0,0,0.06) } 50% { border-color:rgba(0,0,0,0.22) } 100% { border-color:rgba(0,0,0,0.06) } }
-
-    @media (max-width:var(--mobile-break)) {
-      .book{ padding:14px }
-      .paper{ padding:14px }
-      h1.head{ font-size:22px }
-      .content{ font-size:16px; }
-      .doodles{ width:110px; height:110px; right:8px; top:8px }
+    .wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
     }
+
+    .book {
+      width: 100%;
+      max-width: var(--maxw);
+      background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.98));
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 26px 60px rgba(12,12,15,0.10), inset 0 1px 0 rgba(255,255,255,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+      position: relative;
+      overflow: visible;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .tape {
+      width: 120px;
+      height: 42px;
+      background: linear-gradient(90deg, #f1dcbf, #f7e9d0);
+      border-radius: 6px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+      transform: rotate(-6deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--muted);
+      font-family: var(--serif);
+      font-size: 13px;
+    }
+    .title {
+      font-size: 18px;
+      color: var(--muted);
+      font-family: var(--serif);
+    }
+
+    .slides {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: var(--slide-height);
+      max-height: calc(var(--slide-height) * 1.1);
+      padding: 16px;
+    }
+
+    .paper {
+      width: 100%;
+      max-width: 860px;
+      background: linear-gradient(180deg, #fff 0%, #fffcfb 100%);
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 8px 26px rgba(18,18,18,0.06);
+      border: 1px solid var(--paper-edge);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .paper::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 10% 15%, rgba(0,0,0,0.02) 0px, transparent 22%),
+        linear-gradient(90deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01));
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 20px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .slide.active {
+      display: flex;
+      z-index: 3;
+      animation: slideIn 420ms cubic-bezier(.22,.9,.3,1);
+    }
+    @keyframes slideIn {
+      from { transform: translateY(10px); opacity: 0 }
+      to { transform: translateY(0); opacity: 1 }
+    }
+
+    .content {
+      max-width: 740px;
+      text-align: left;
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--ink);
+      padding: 6px 4px;
+    }
+    .long {
+      max-height: calc(var(--slide-height) - 120px);
+      overflow-y: auto;
+      padding-right: 12px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    h1.head {
+      font-size: 28px;
+      margin: 8px 0;
+      color: var(--ink);
+    }
+    p.note {
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    .doodles {
+      position: absolute;
+      right: 14px;
+      top: 12px;
+      width: 140px;
+      height: 140px;
+      pointer-events: none;
+      opacity: 0.95;
+      transform: rotate(-6deg);
+    }
+    .corner-tape {
+      position: absolute;
+      left: 14px;
+      top: 6px;
+      width: 84px;
+      height: 34px;
+      background: linear-gradient(90deg,#f3dcbf,#f8ead0);
+      border-radius: 6px;
+      transform: rotate(-6deg);
+      box-shadow: 0 8px 14px rgba(0,0,0,0.05);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif);
+      color: #5b4d3a;
+      font-size: 12px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .left-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .btn {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.06);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-family: var(--hand);
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(11,12,13,0.04);
+      transition: transform 180ms, box-shadow 180ms;
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 36px rgba(0,0,0,0.07);
+    }
+    .btn.ghost {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+    }
+    .dots { display: flex; gap: 8px; align-items: center; }
+    .dot {
+      width: 9px; height: 9px;
+      background: #e7e3dd;
+      border-radius: 50%;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.06);
+      transition: transform 200ms, background 200ms;
+    }
+    .dot.active {
+      background: var(--heart);
+      transform: scale(1.15);
+      box-shadow: 0 6px 18px rgba(255,107,138,0.12);
+    }
+
+    .final-title {
+      font-size: 36px;
+      color: var(--heart);
+      font-weight: 700;
+      text-shadow: 0 6px 20px rgba(255,107,138,0.06);
+    }
+    .final-sub {
+      font-size: 17px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .particles { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+    .confetti { position: absolute; inset: 0; pointer-events: none; z-index: 9999; }
+
+    .writing {
+      white-space: pre-wrap;
+      border-right: 2px solid rgba(0,0,0,0.08);
+      animation: caret 1s steps(1) infinite;
+    }
+    @keyframes caret {
+      0% { border-color: rgba(0,0,0,0.06); }
+      50% { border-color: rgba(0,0,0,0.22); }
+      100% { border-color: rgba(0,0,0,0.06); }
+    }
+
+    @media (max-width: var(--mobile-break)) {
+      .book { padding: 14px; }
+      .paper { padding: 14px; }
+      h1.head { font-size: 22px; }
+      .content { font-size: 16px; }
+      .doodles { width: 110px; height: 110px; right: 8px; top: 8px; }
+    }
+
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="book" role="main" aria-label="Birthday scrapbook for Antratica">
 
-      <!-- header -->
       <div class="header">
         <div class="tape">A little thing</div>
         <div class="title">For <strong>Antratica</strong> — open slowly</div>
       </div>
 
-      <!-- slides -->
       <div class="slides" aria-live="polite">
         <div class="paper" role="region" aria-label="Slide area">
 
           <div class="corner-tape">PLAYLIST</div>
 
-          <!-- doodles -->
           <svg class="doodles" viewBox="0 0 120 120" aria-hidden="true" preserveAspectRatio="xMinYMin">
             <g fill="none" stroke="#e6c9b2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10 22 C40 12, 80 10, 110 24" opacity="0.95"/>
-              <path d="M16 50 C40 44, 70 46, 104 55" opacity="0.85"/>
+              <path d="M16 50 C40 44, 70 46, 104 55" opacity=“0.85”/>
               <circle cx="30" cy="86" r="3.2" fill="#ffdcc5" stroke="none"/>
-              <path d="M70 90 C74 86, 86 82, 106 86" stroke="#ffd8c4" opacity="0.6"/>
+              <path d="M70 90 C74 86, 86 82, 106 86" stroke="#ffd8c4" opacity=0.6/>
             </g>
             <g transform="translate(6,8)" fill="#ffd1d9" opacity="0.9">
               <path d="M80 10 c0 -6 7 -8 11 -4 4 4 2 10 -3 14 -5 -4 -8 -6 -8 -10z"/>
@@ -138,7 +314,7 @@
             <div class="content"><p id="slide2">There are some people who arrive and quietly rearrange your world. You are one of those — a soft presence, an honest laugh, a home in a thousand miles.</p></div>
           </section>
 
-          <!-- Slide 3 (long, scrollable) -->
+          <!-- Slide 3 -->
           <section class="slide" id="s2" aria-hidden="true">
             <h1 class="head">So—</h1>
             <div class="content long" id="slide3" tabindex="0">
@@ -161,8 +337,8 @@
               <p id="slide4">Here are some moments I wish I could pack into one room: late-night talks, stubborn wisdom, tiny shared playlists, and the way you make an ordinary day feel like a scene from a movie.</p>
               <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap">
                 <div style="width:160px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
-                <div style="width:160px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
-                <div style="width:160px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
+                <div style="width:160px;height=110px;border-radius:10px;background:#fffefb;border:1px dashed:#f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
+                <div style="width:160px;height:110px;border-radius:10px;background=#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
               </div>
             </div>
           </section>
@@ -189,7 +365,6 @@
         </div>
       </div>
 
-      <!-- controls -->
       <div class="controls" style="margin-top:6px;">
         <div class="left-controls">
           <button class="btn ghost" id="backBtn" aria-label="Previous slide">← Back</button>
@@ -201,8 +376,8 @@
             <div class="dot" data-i="1"></div>
             <div class="dot" data-i="2"></div>
             <div class="dot" data-i="3"></div>
-            <div class="dot" data-i="4"></div>
-            <div class="dot" data-i="5"></div>
+            <div class="dot data-i="4"></div>
+            <div class="dot data-i="5"></div>
           </div>
           <div class="page-info" id="pageInfo">1 / 6</div>
         </div>
@@ -212,8 +387,6 @@
   </div>
 
   <script>
-    // Safe, polished slide manager + interactions
-
     const slides = Array.from(document.querySelectorAll('.slide'));
     const dots = Array.from(document.querySelectorAll('.dot'));
     const nextBtn = document.getElementById('nextBtn');
@@ -224,14 +397,14 @@
 
     let idx = 0;
     const total = slides.length;
-    let navLock = false; // prevent double navigation
+    let navLock = false;
 
-    function lockNav(ms = 420){
+    function lockNav(ms = 450) {
       navLock = true;
-      setTimeout(()=> navLock = false, ms + 80);
+      setTimeout(()=> navLock = false, ms);
     }
 
-    function updateState(i){
+    function updateState(i) {
       if(navLock) return;
       lockNav();
 
@@ -239,84 +412,50 @@
       if(i > total - 1) i = total - 1;
       idx = i;
 
-      slides.forEach((s, j)=> {
+      slides.forEach((s,j)=>{
         const active = j === i;
         s.classList.toggle('active', active);
         s.setAttribute('aria-hidden', active ? 'false' : 'true');
-        if(active){
-          // ensure focus and reset long scroll
+        if(active) {
           const long = s.querySelector('.long');
           if(long) long.scrollTop = 0;
-          setTimeout(()=> { s.setAttribute('tabindex','0'); s.focus({preventScroll:true}); }, 40);
+          setTimeout(()=> { s.setAttribute('tabindex','0'); s.focus({preventScroll:true}); }, 60);
         } else {
           s.removeAttribute('tabindex');
         }
       });
 
-      dots.forEach((d, j)=> d.classList.toggle('active', j === i));
+      dots.forEach((d,j)=> d.classList.toggle('active', j===i));
       pageInfo.textContent = `${i+1} / ${total}`;
 
-      // micro fade for content
       const content = slides[i].querySelector('.content');
-      if(content){
+      if(content) {
         content.style.opacity = 0;
-        content.style.transition = 'opacity 420ms ease';
+        content.style.transition = 'opacity 380ms ease';
         setTimeout(()=> content.style.opacity = 1, 40);
       }
 
-      // trigger final reveal when last slide appears
-      if(slides[i].id === 's5'){
-        runFinalReveal();
-      }
+      if(slides[i].id === 's5') runFinalReveal();
     }
 
-    // navigation handlers
     nextBtn.addEventListener('click', ()=> updateState(Math.min(total-1, idx+1)));
     backBtn.addEventListener('click', ()=> updateState(Math.max(0, idx-1)));
 
-    // click on paper to advance unless interacting with long scroll area or controls
     document.querySelector('.paper').addEventListener('click', (e)=>{
       if(e.target.closest('.btn')) return;
-      if(e.target.closest('.long')) return; // don't advance when clicked inside scroll area
+      if(e.target.closest('.long')) return;
       updateState(Math.min(total-1, idx+1));
     });
 
-    // keyboard navigation
     document.addEventListener('keydown', (e)=>{
       if(e.key === 'ArrowRight' || e.key === 'Enter') updateState(Math.min(total-1, idx+1));
       if(e.key === 'ArrowLeft' || e.key === 'Backspace') updateState(Math.max(0, idx-1));
     });
 
-    // dot click
     dots.forEach(d => d.addEventListener('click', ()=> updateState(Number(d.dataset.i)) ));
 
-    // mobile swipe detection (simple)
-    (function addSwipe(){
-      let startX = 0, startY = 0, moving = false;
-      const threshold = 40;
-      const el = document.querySelector('.paper');
-      el.addEventListener('touchstart', (e)=> {
-        if(e.touches.length !== 1) return;
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-        moving = true;
-      }, {passive:true});
-      el.addEventListener('touchmove', (e)=> {
-        if(!moving || e.touches.length !==1) return;
-        const dx = e.touches[0].clientX - startX;
-        const dy = e.touches[0].clientY - startY;
-        if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > threshold){
-          moving = false;
-          if(dx < 0) updateState(Math.min(total-1, idx+1)); else updateState(Math.max(0, idx-1));
-        }
-      }, {passive:true});
-      el.addEventListener('touchend', ()=> { moving=false; });
-    })();
-
-    // initialize first slide
     updateState(0);
 
-    /* ---------------- particles (gentle floating bits) ---------------- */
     (function createParticles(){
       const COUNT = 14;
       for(let i=0;i<COUNT;i++){
@@ -334,14 +473,13 @@
         particlesEl.appendChild(el);
         const dur = 7000 + Math.random()*9000;
         el.animate([
-          { transform: `translateY(0px) translateX(0px)` },
+          { transform: 'translateY(0px) translateX(0px)' },
           { transform: `translateY(${6 + Math.random()*22}px) translateX(${(-6 + Math.random()*12)}px)` },
-          { transform: `translateY(0px) translateX(0px)` }
+          { transform: 'translateY(0px) translateX(0px)' }
         ], { duration: dur, iterations: Infinity, easing: 'ease-in-out', delay: Math.random()*2000 });
       }
     })();
 
-    /* ---------------- typewriter for first slide (handwritten feel) ---------------- */
     (function typeFirst(){
       const el = document.getElementById('slide1');
       if(!el) return;
@@ -357,18 +495,16 @@
       })();
     })();
 
-    /* ---------------- final reveal: confetti + hearts ---------------- */
     function runFinalReveal(){
       if(confettiEl.dataset.fired) return;
       confettiEl.dataset.fired = '1';
 
       if(window.confetti){
-        confetti({ particleCount: 30, spread: 120, origin: { y: 0.2 }, gravity: 0.6, ticks: 200, scalar: 0.95, colors: ['#ff7b9c','#ffd1c9','#fff4e6'] });
-        setTimeout(()=> confetti({ particleCount: 60, spread: 220, origin: { y: 0.1 }, gravity: 0.7, ticks: 200, colors: ['#ff7b9c','#ffd1c9','#fff4e6'] }), 300);
-        setTimeout(()=> confetti({ particleCount: 100, spread: 260, origin: { y: 0.1 }, gravity: 0.6, ticks: 200, colors: ['#ff7b9c','#ffd1c9','#fff4e6'] }), 900);
+        confetti({ particleCount: 30, spread: 120, origin: { y: 0.2 }, gravity: 0.6, ticks: 200, scalar:0.95, colors:['#ff7b9c','#ffd1c9','#fff4e6'] });
+        setTimeout(()=> confetti({ particleCount: 60, spread: 220, origin: { y: 0.1 }, gravity: 0.7, ticks:200, colors:['#ff7b9c','#ffd1c9','#fff4e6'] }), 300);
+        setTimeout(()=> confetti({ particleCount: 100, spread: 260, origin: { y: 0.1 }, gravity:0.6, ticks:200, colors:['#ff7b9c','#ffd1c9','#fff4e6'] }), 900);
       }
 
-      // soft hearts floating (DOM)
       function makeHeart(x){
         const n = document.createElement('div');
         n.style.position = 'absolute';
@@ -377,14 +513,14 @@
         n.style.pointerEvents = 'none';
         n.style.opacity = '0';
         n.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 20s-7-4.35-9-6.8C-0.5 9.6 3.4 4 7.5 5.2 9 5.8 10 7.4 12 9.2c2-1.8 3-3.4 4.5-4 4.1-1.2 8 4.4 4.5 8.9-2 2.4-9 6.9-9 6.9z" fill="${Math.random()>0.5? '#ff7b9c' : '#ffd1c9'}" opacity="0.95"/></svg>`;
+          <path d="M12 20s-7-4.35-9-6.8C-0.5 9.6 3.4 4 7.5 5.2 9 5.8 10 7.4 12 9.2c2-1.8 3-3.4 4.5-4 4.1-1.2 8 4.4 4.5 8.9-2 2.4-9 6.9-9 6.9z" fill="${Math.random()>0.5? '#ff7b9c':'#ffd1c9'}" opacity="0.95"/></svg>`;
         confettiEl.appendChild(n);
         const duration = 2600 + Math.random()*1200;
         n.animate([
-          { transform: 'translateY(0px) scale(0.85)', opacity: 0 },
-          { transform: `translateY(-160px) scale(1.05)`, opacity: 1 },
-          { transform: `translateY(-320px) scale(0.9)`, opacity: 0 }
-        ], { duration, easing: 'cubic-bezier(.2,.9,.3,1)' });
+          { transform:'translateY(0px) scale(0.85)', opacity:0 },
+          { transform:`translateY(-160px) scale(1.05)`, opacity:1 },
+          { transform:'translateY(-320px) scale(0.9)', opacity:0 }
+        ], { duration, easing:'cubic-bezier(.2,.9,.3,1)' });
         setTimeout(()=> n.remove(), duration + 160);
       }
 
@@ -393,16 +529,13 @@
       setTimeout(()=> clearInterval(rain), 4200);
     }
 
-    // prevent accidental selection (except in .long)
-    document.addEventListener('selectstart', (e)=> {
+    document.addEventListener('selectstart', (e)=>{
       if(e.target.closest('.long')) return;
       e.preventDefault();
     });
 
-    // helpful console message
-    console.log("IDs to edit: slide1, slide2, slide3, slide4, slide5, finalTitle, finalSub");
+    console.log("Text edit ids → slide1, slide2, slide3, slide4, slide5, finalTitle, finalSub");
 
-    // ensure initial state on load
     window.addEventListener('load', ()=> updateState(0));
   </script>
 </body>
