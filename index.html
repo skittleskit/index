@@ -290,9 +290,9 @@
           <svg class="doodles" viewBox="0 0 120 120" aria-hidden="true" preserveAspectRatio="xMinYMin">
             <g fill="none" stroke="#e6c9b2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10 22 C40 12, 80 10, 110 24" opacity="0.95"/>
-              <path d="M16 50 C40 44, 70 46, 104 55" opacity=“0.85”/>
+              <path d="M16 50 C40 44, 70 46, 104 55" opacity="0.85"/>
               <circle cx="30" cy="86" r="3.2" fill="#ffdcc5" stroke="none"/>
-              <path d="M70 90 C74 86, 86 82, 106 86" stroke="#ffd8c4" opacity=0.6/>
+              <path d="M70 90 C74 86, 86 82, 106 86" stroke="#ffd8c4" opacity="0.6"/>
             </g>
             <g transform="translate(6,8)" fill="#ffd1d9" opacity="0.9">
               <path d="M80 10 c0 -6 7 -8 11 -4 4 4 2 10 -3 14 -5 -4 -8 -6 -8 -10z"/>
@@ -337,8 +337,8 @@
               <p id="slide4">Here are some moments I wish I could pack into one room: late-night talks, stubborn wisdom, tiny shared playlists, and the way you make an ordinary day feel like a scene from a movie.</p>
               <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap">
                 <div style="width:160px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
-                <div style="width:160px;height=110px;border-radius:10px;background:#fffefb;border:1px dashed:#f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
-                <div style="width:160px;height:110px;border-radius:10px;background=#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
+                <div style="width:160px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
+                <div style="width:160px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
               </div>
             </div>
           </section>
@@ -376,8 +376,8 @@
             <div class="dot" data-i="1"></div>
             <div class="dot" data-i="2"></div>
             <div class="dot" data-i="3"></div>
-            <div class="dot data-i="4"></div>
-            <div class="dot data-i="5"></div>
+            <div class="dot" data-i="4"></div>
+            <div class="dot" data-i="5"></div>
           </div>
           <div class="page-info" id="pageInfo">1 / 6</div>
         </div>
@@ -465,78 +465,4 @@
         el.style.top = (6 + Math.random()*80) + '%';
         const size = (4 + Math.random()*8);
         el.style.width = size + 'px';
-        el.style.height = size + 'px';
-        el.style.borderRadius = '50%';
-        el.style.background = 'rgba(255,107,138,' + (0.04 + Math.random()*0.08) + ')';
-        el.style.filter = 'blur(0.9px)';
-        el.style.pointerEvents = 'none';
-        particlesEl.appendChild(el);
-        const dur = 7000 + Math.random()*9000;
-        el.animate([
-          { transform: 'translateY(0px) translateX(0px)' },
-          { transform: `translateY(${6 + Math.random()*22}px) translateX(${(-6 + Math.random()*12)}px)` },
-          { transform: 'translateY(0px) translateX(0px)' }
-        ], { duration: dur, iterations: Infinity, easing: 'ease-in-out', delay: Math.random()*2000 });
-      }
-    })();
-
-    (function typeFirst(){
-      const el = document.getElementById('slide1');
-      if(!el) return;
-      const full = (el.textContent || el.innerText || '').trim();
-      el.textContent = '';
-      el.classList.remove('writing');
-      let p = 0;
-      (function step(){
-        p++;
-        el.textContent = full.slice(0,p);
-        if(p < full.length) setTimeout(step, 36 + Math.random()*36);
-        else el.classList.add('writing');
-      })();
-    })();
-
-    function runFinalReveal(){
-      if(confettiEl.dataset.fired) return;
-      confettiEl.dataset.fired = '1';
-
-      if(window.confetti){
-        confetti({ particleCount: 30, spread: 120, origin: { y: 0.2 }, gravity: 0.6, ticks: 200, scalar:0.95, colors:['#ff7b9c','#ffd1c9','#fff4e6'] });
-        setTimeout(()=> confetti({ particleCount: 60, spread: 220, origin: { y: 0.1 }, gravity: 0.7, ticks:200, colors:['#ff7b9c','#ffd1c9','#fff4e6'] }), 300);
-        setTimeout(()=> confetti({ particleCount: 100, spread: 260, origin: { y: 0.1 }, gravity:0.6, ticks:200, colors:['#ff7b9c','#ffd1c9','#fff4e6'] }), 900);
-      }
-
-      function makeHeart(x){
-        const n = document.createElement('div');
-        n.style.position = 'absolute';
-        n.style.left = (x || (8 + Math.random()*84)) + '%';
-        n.style.bottom = '-8px';
-        n.style.pointerEvents = 'none';
-        n.style.opacity = '0';
-        n.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 20s-7-4.35-9-6.8C-0.5 9.6 3.4 4 7.5 5.2 9 5.8 10 7.4 12 9.2c2-1.8 3-3.4 4.5-4 4.1-1.2 8 4.4 4.5 8.9-2 2.4-9 6.9-9 6.9z" fill="${Math.random()>0.5? '#ff7b9c':'#ffd1c9'}" opacity="0.95"/></svg>`;
-        confettiEl.appendChild(n);
-        const duration = 2600 + Math.random()*1200;
-        n.animate([
-          { transform:'translateY(0px) scale(0.85)', opacity:0 },
-          { transform:`translateY(-160px) scale(1.05)`, opacity:1 },
-          { transform:'translateY(-320px) scale(0.9)', opacity:0 }
-        ], { duration, easing:'cubic-bezier(.2,.9,.3,1)' });
-        setTimeout(()=> n.remove(), duration + 160);
-      }
-
-      for(let i=0;i<10;i++) setTimeout(()=> makeHeart(), i*120);
-      const rain = setInterval(()=> makeHeart(), 220);
-      setTimeout(()=> clearInterval(rain), 4200);
-    }
-
-    document.addEventListener('selectstart', (e)=>{
-      if(e.target.closest('.long')) return;
-      e.preventDefault();
-    });
-
-    console.log("Text edit ids → slide1, slide2, slide3, slide4, slide5, finalTitle, finalSub");
-
-    window.addEventListener('load', ()=> updateState(0));
-  </script>
-</body>
-</html>
+s
