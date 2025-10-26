@@ -1,4 +1,4 @@
-<!doctype html><!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -8,30 +8,33 @@
   <!-- Handwritten font -->
   <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
+  <!-- confetti lib -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js" defer></script>
+
   <style>
-    /* ---------- THEME: Scrapbook + Doodles (paper texture + warm) ---------- */
+    /* ---------- THEME: Scrapbook + Minimal Cute Doodles ---------- */
     :root{
-      --bg-paper: #fbf7f2;
-      --paper-edge: #efebe6;
+      --bg-paper: #fbf7f3;
+      --paper-edge: #efeae3;
       --ink: #222023;
-      --accent: #e7cba6; /* washi tape */
       --muted: #6b6a66;
+      --accent: #e7c9b0; /* washi tape */
       --heart: #ff6b8a;
       --maxw: 980px;
-      --radius: 18px;
+      --radius: 14px;
       --hand: "Patrick Hand", "Segoe UI", Arial, sans-serif;
       --serif: "Libre Baskerville", Georgia, serif;
       --slide-height: 66vh;
+      --gap: 18px;
     }
 
-    /* reset */
+    /* reset / base */
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;background:
-      linear-gradient(180deg, #f6f3ef 0%, #faf7f4 100%);
+      linear-gradient(180deg, #f7f4ef 0%, #fbf8f4 100%);
       color:var(--ink); font-family:var(--hand); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
-    /* container */
     .wrap{
       min-height:100vh;
       display:flex;
@@ -43,225 +46,107 @@
     .book {
       width:100%;
       max-width:var(--maxw);
-      background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.96));
+      background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.98));
       border-radius:12px;
-      padding:28px;
-      box-shadow: 0 20px 50px rgba(17,17,17,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
+      padding:22px;
+      box-shadow: 0 26px 60px rgba(12,12,15,0.10), inset 0 1px 0 rgba(255,255,255,0.6);
       display:flex;
       flex-direction:column;
-      gap:18px;
+      gap:var(--gap);
       position:relative;
       overflow:visible;
     }
 
-    /* little header / tape */
-    .header {
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
+    /* header */
+    .header { display:flex; align-items:center; gap:12px; }
     .tape {
-      width:120px; height:44px;
-      background: linear-gradient(90deg,#e9d4b8,#f6eeda);
+      width:120px; height:42px;
+      background: linear-gradient(90deg,#f1dcbf,#f7e9d0);
       border-radius:6px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.06);
       transform: rotate(-6deg);
       display:flex; align-items:center; justify-content:center;
       font-weight:700; color:var(--muted);
       font-family:var(--serif);
+      font-size:13px;
     }
-    .title {
-      font-size:18px;
-      color:var(--muted);
-      font-family:var(--serif);
-    }
+    .title { font-size:18px; color:var(--muted); font-family:var(--serif); }
 
     /* slides area */
-    .slides {
-      position:relative;
-      display:flex;
-      gap:18px;
-      align-items:center;
-      justify-content:center;
-      min-height: var(--slide-height);
-      max-height: calc(var(--slide-height) * 1.05);
-      overflow:visible;
-      padding:18px;
-    }
-
+    .slides { position:relative; display:flex; align-items:center; justify-content:center; min-height:var(--slide-height); padding:16px; }
     .paper {
       width:100%;
       max-width:860px;
-      background: linear-gradient(180deg,#fff 0%, #fffefc 100%);
+      background: linear-gradient(180deg,#fff 0%, #fffcfb 100%);
       border-radius:12px;
-      padding:28px;
-      box-shadow: 0 8px 30px rgba(14,14,14,0.06);
+      padding:22px;
+      box-shadow: 0 8px 26px rgba(18,18,18,0.06);
       border: 1px solid var(--paper-edge);
       position:relative;
       overflow:hidden;
     }
-
-    /* subtle paper texture using layered gradients */
     .paper::before{
-      content: "";
-      position:absolute;
-      inset:0;
+      content:"";
+      position:absolute; inset:0;
       background-image:
-        radial-gradient(circle at 10% 10%, rgba(0,0,0,0.02) 0px, transparent 20%),
+        radial-gradient(circle at 10% 15%, rgba(0,0,0,0.02) 0px, transparent 22%),
         linear-gradient(90deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01));
-      opacity:0.45;
-      pointer-events:none;
+      opacity:0.5; pointer-events:none;
     }
 
-    /* slides (stacked) */
+    /* slides stacked */
     .slide {
-      position:absolute;
-      inset:0;
-      padding:30px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      align-items:center;
-      justify-content:center;
-      opacity:0;
-      transform: translateY(18px) scale(0.995);
-      transition: all 520ms cubic-bezier(.22,.9,.3,1);
+      position:absolute; inset:0;
+      padding:20px;
+      display:flex; flex-direction:column; gap:10px;
+      align-items:center; justify-content:center;
       text-align:center;
+      opacity:0; transform: translateY(16px) scale(0.995);
+      transition: all 520ms cubic-bezier(.22,.9,.3,1);
     }
-    .slide.active{ opacity:1; transform: translateY(0) scale(1); }
+    .slide.active { opacity:1; transform: translateY(0) scale(1); z-index:3; }
 
-    /* long content area with scroll if needed */
-    .content {
-      max-width:760px;
-      text-align:left;
-      font-size:18px;
-      line-height:1.6;
-      color:var(--ink);
-      background: linear-gradient(180deg, transparent, rgba(250,250,250,0.02));
-      padding:8px 4px;
-      border-radius:8px;
-      overflow-wrap:break-word;
-    }
+    /* content */
+    .content { max-width:740px; text-align:left; font-size:18px; line-height:1.6; color:var(--ink); padding:6px 4px; }
+    .long { max-height: calc(var(--slide-height) - 120px); overflow-y:auto; padding-right:12px; }
 
-    /* specifically allow scroll for large content */
-    .long {
-      max-height: calc(var(--slide-height) - 120px);
-      overflow-y:auto;
-      padding-right:12px;
-    }
+    h1.head { font-family:var(--hand); font-size:28px; margin:8px 0; color:var(--ink); }
+    p.note { font-size:15px; color:var(--muted); }
 
-    /* stylized headings */
-    h1.head {
-      font-family: var(--hand);
-      font-size:28px;
-      margin:8px 0;
-      color:var(--ink);
-      letter-spacing:0.2px;
-    }
-    p.note {
-      font-size:16px;
-      color:var(--muted);
-    }
-
-    /* doodles - small svg inline placeholders */
-    .doodles {
-      position:absolute;
-      pointer-events:none;
-      inset:auto;
-      width:180px; height:180px;
-      right:16px; top:16px;
-      opacity:0.9;
-      transform:rotate(-8deg) translateZ(0);
-    }
-
-    /* washi decorative stickers */
-    .sticker {
-      position:absolute;
-      width:88px;
-      height:38px;
-      top:-14px;
-      left:18px;
-      transform:rotate(-6deg);
-      border-radius:6px;
-      display:flex;align-items:center;justify-content:center;
-      font-family:var(--serif);
-      color:#5b4d3a;
-      box-shadow: 0 10px 18px rgba(0,0,0,0.06);
-    }
+    /* doodles - minimal & cute */
+    .doodles { position:absolute; right:14px; top:12px; width:140px; height:140px; pointer-events:none; opacity:0.95; transform:rotate(-6deg); }
+    /* small corner tape */
+    .corner-tape { position:absolute; left:14px; top:6px; width:84px; height:34px; background:linear-gradient(90deg,#f3dcbf,#f8ead0); border-radius:6px; transform:rotate(-6deg); box-shadow:0 8px 14px rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; font-family:var(--serif); color:#5b4d3a; font-size:12px; }
 
     /* controls */
-    .controls {
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-    }
-    .left-controls {
-      display:flex; gap:8px; align-items:center;
-    }
+    .controls { display:flex; gap:10px; align-items:center; justify-content:space-between; }
+    .left-controls { display:flex; gap:8px; align-items:center; }
+    .btn { background:#fff; border:1px solid rgba(0,0,0,0.06); padding:10px 14px; border-radius:10px; font-family:var(--hand); cursor:pointer; box-shadow: 0 6px 18px rgba(11,12,13,0.04); transition: transform 180ms, box-shadow 180ms; }
+    .btn:hover { transform:translateY(-3px); box-shadow:0 18px 36px rgba(0,0,0,0.07); }
+    .btn.ghost { background:transparent; border:none; color:var(--muted); }
+    .dots { display:flex; gap:8px; align-items:center; }
+    .dot { width:9px; height:9px; background:#e7e3dd; border-radius:50%; box-shadow: inset 0 -2px 0 rgba(0,0,0,0.06); transition: transform 200ms, background 200ms; }
+    .dot.active { background:var(--heart); transform:scale(1.15); box-shadow: 0 6px 18px rgba(255,107,138,0.12); }
 
-    .btn {
-      background: #fff;
-      border: 1px solid rgba(0,0,0,0.06);
-      padding:10px 14px;
-      border-radius:10px;
-      font-family:var(--hand);
-      cursor:pointer;
-      box-shadow: 0 6px 18px rgba(11,12,13,0.04);
-      transition: transform 180ms ease, box-shadow 180ms ease;
-    }
-    .btn:hover { transform: translateY(-4px); box-shadow:0 16px 30px rgba(10,10,10,0.08); }
-    .btn.primary { background: linear-gradient(90deg,#fff 0,#fffefc 100%); border: 1px solid rgba(0,0,0,0.08); }
-    .btn.ghost { background:transparent; border: none; color:var(--muted); }
+    /* final */
+    .final-title { font-size:36px; color:var(--heart); font-weight:700; text-shadow:0 6px 20px rgba(255,107,138,0.06); }
+    .final-sub { font-size:17px; color:var(--muted); margin-top:8px; }
 
-    /* progress dots */
-    .dots { display:flex; gap:8px; align-items:center; justify-content:center; }
-    .dot { width:8px; height:8px; background:#e6e1dc; border-radius:50%; box-shadow: inset 0 -2px 0 rgba(0,0,0,0.06); }
-    .dot.active { background:var(--heart); box-shadow: 0 4px 14px rgba(255,107,138,0.18); transform:scale(1.15); }
+    /* particles and confetti containers */
+    .particles { position:absolute; inset:0; pointer-events:none; z-index:2; }
+    .confetti { position:absolute; inset:0; pointer-events:none; z-index:9999; }
 
-    /* final title */
-    .final-title {
-      font-size:36px; color:var(--heart); font-weight:700;
-      text-shadow: 0 6px 20px rgba(255,107,138,0.08);
-    }
-    .final-sub { font-size:17px; color:var(--muted); margin-top:6px; }
+    /* handwriting caret effect class (used only on typed element) */
+    .writing { white-space:pre-wrap; border-right:2px solid rgba(0,0,0,0.08); animation:caret 1s steps(1) infinite; }
+    @keyframes caret{ 0%{border-color:rgba(0,0,0,0.06)} 50%{border-color:rgba(0,0,0,0.22)} 100%{border-color:rgba(0,0,0,0.06)} }
 
-    /* small page indicators */
-    .page-info { font-size:13px; color:var(--muted); font-family:var(--serif); }
-
-    /* small responsive tweaks */
-    @media (max-width:720px){
-      .book{ padding:18px; }
-      .paper{ padding:18px; }
+    /* responsive */
+    @media (max-width:760px){
+      .book{ padding:14px; }
+      .paper{ padding:14px; }
       h1.head{ font-size:22px; }
-      .slides{ padding:8px; min-height:52vh; }
-    }
-
-    /* gentle floating particles (stars) */
-    .particles { position:absolute; inset:0; pointer-events:none; z-index:5; }
-    .particle { position:absolute; width:6px; height:6px; border-radius:50%; background:rgba(255,107,138,0.08); filter: blur(1px); }
-
-    /* nice handwritten reveal animation for writing effect */
-    .writing {
-      display:inline-block;
-      white-space:pre-wrap;
-      overflow:hidden;
-      border-right: 2px solid rgba(0,0,0,0.08);
-      animation: caret 1s steps(1) infinite;
-    }
-    @keyframes caret {
-      0% { border-color: rgba(0,0,0,0.08); }
-      50% { border-color: rgba(0,0,0,0.22); }
-      100% { border-color: rgba(0,0,0,0.08); }
-    }
-
-    /* subtle floating hearts confetti (for final reveal) */
-    .confetti {
-      position:absolute;
-      pointer-events:none;
-      inset:0;
-      z-index:9999;
-      overflow:visible;
+      .content{ font-size:16px; }
+      .doodles{ width:110px; height:110px; right:8px; top:8px; }
     }
   </style>
 </head>
@@ -269,26 +154,30 @@
   <div class="wrap">
     <div class="book" role="main" aria-label="Birthday scrapbook for Antratica">
 
-      <!-- header / tape -->
+      <!-- header -->
       <div class="header">
         <div class="tape">A little thing</div>
         <div class="title">For <strong>Antratica</strong> — open slowly</div>
       </div>
 
-      <!-- slides container -->
+      <!-- slides -->
       <div class="slides" aria-live="polite">
         <div class="paper" role="region" aria-label="Slide area">
 
-          <!-- sticky sticker (washi) -->
-          <div class="sticker" style="background:linear-gradient(90deg,#f0d7b8,#efd9c1);">PLAYLIST</div>
+          <!-- corner sticker -->
+          <div class="corner-tape">PLAYLIST</div>
 
-          <!-- doodles SVG -->
-          <svg class="doodles" viewBox="0 0 120 120" preserveAspectRatio="xMinYMin">
+          <!-- doodles -->
+          <svg class="doodles" viewBox="0 0 120 120" aria-hidden="true" preserveAspectRatio="xMinYMin">
             <g fill="none" stroke="#e6c9b2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10 20 C40 10, 80 10, 110 20" opacity="0.9"/>
-              <path d="M20 40 C50 30, 70 30, 100 40" opacity="0.8"/>
-              <circle cx="18" cy="78" r="2.7" fill="#ffd8c4" stroke="none"/>
-              <circle cx="40" cy="86" r="2.2" fill="#ffd8c4" stroke="none"/>
+              <path d="M10 22 C40 12, 80 10, 110 24" opacity="0.95"/>
+              <path d="M16 50 C40 44, 70 46, 104 55" opacity="0.85"/>
+              <circle cx="30" cy="86" r="3.2" fill="#ffdcc5" stroke="none"/>
+              <path d="M70 90 C74 86, 86 82, 106 86" stroke="#ffd8c4" opacity="0.6"/>
+            </g>
+            <!-- tiny cute hearts -->
+            <g transform="translate(6,8)" fill="#ffd1d9" opacity="0.9">
+              <path d="M80 10 c0 -6 7 -8 11 -4 4 4 2 10 -3 14 -5 -4 -8 -6 -8 -10z"/>
             </g>
           </svg>
 
@@ -296,54 +185,41 @@
           <section class="slide active" id="s0" aria-hidden="false">
             <h1 class="head">Hey—</h1>
             <div class="content" style="text-align:left;">
-              <!-- TODO: Replace innerText if you want, id=slide1 for easy edit -->
               <p id="slide1" class="writing">lol. I hope you don’t feel as weird reading this as I do while creating it. Anyway… I always wanted to try something like this.</p>
             </div>
-            <div style="margin-top:14px" aria-hidden>
-              <small class="note">Tap / click anywhere to move forward</small>
-            </div>
+            <div style="margin-top:12px"><small class="note">Tap / click anywhere to move forward</small></div>
           </section>
 
           <!-- Slide 2 -->
-          <section class="slide" id="s1" aria-hidden="true" tabindex="0">
+          <section class="slide" id="s1" aria-hidden="true">
             <h1 class="head">To my… well, whatever you are, <span style="color:#b86f50">Antratica</span></h1>
             <div class="content">
-              <!-- KEEP the paragraph exactly as needed — editable id -->
               <p id="slide2">There are some people who arrive and quietly rearrange your world. You are one of those — a soft presence, an honest laugh, a home in a thousand miles.</p>
             </div>
           </section>
 
-          <!-- Slide 3 (long text; scrollable) -->
-          <section class="slide" id="s2" aria-hidden="true" tabindex="0">
+          <!-- Slide 3 (long, scrollable) -->
+          <section class="slide" id="s2" aria-hidden="true">
             <h1 class="head">So—</h1>
-            <div class="content long" id="slide3">
-              <!-- THIS is the long text area; keep formatting with <br> if you wish -->
-              <!-- YOUR finalized text is already present here; edit inside GitHub if needed -->
+            <div class="content long" id="slide3" tabindex="0">
               <p>Clearly the previous slide was cringe since it was written by GPT.</p>
               <p>So I’ll have to write something myself —</p>
-
               <p>While creating this, I remembered a little something from last 31st Dec… or 1st Jan, to be precise.</p>
-
               <p>When you sent a “HAPPY NEW YEAR” text on Telegram — and then deleted it, because apparently you believed “why should I get a special treatment?”</p>
-
               <p>Well… I still don’t know what to say about that, because you couldn’t have said anything more stupid over such a trivial matter.</p>
-
               <p>I genuinely wouldn’t have cared whether you wished me or not. But the fact that you deleted it — that was disappointing.</p>
-
               <p>I don’t care if I was/am “special” or not. But I <strong>have</strong> treated you specially in many ways, even in the smallest details — and I’ll never hesitate to admit that.</p>
-
               <div style="height:14px"></div>
               <p class="note">(Scroll if it looks long on small screens)</p>
             </div>
           </section>
 
-          <!-- Slide 4: Memories (placeholder for photos) -->
-          <section class="slide" id="s3" aria-hidden="true" tabindex="0" style="align-items:center;">
+          <!-- Slide 4: Memories -->
+          <section class="slide" id="s3" aria-hidden="true">
             <h1 class="head">A few moments</h1>
             <div class="content" style="text-align:center;">
               <p id="slide4">Here are some moments I wish I could pack into one room: late-night talks, stubborn wisdom, tiny shared playlists, and the way you make an ordinary day feel like a scene from a movie.</p>
               <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap">
-                <!-- IMAGE PLACEHOLDERS — replace with <img src="your.jpg"> -->
                 <div style="width:160px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
                 <div style="width:160px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
                 <div style="width:160px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
@@ -351,33 +227,31 @@
             </div>
           </section>
 
-          <!-- Slide 5: Gentle build-up -->
-          <section class="slide" id="s4" aria-hidden="true" tabindex="0">
+          <!-- Slide 5: Build-up -->
+          <section class="slide" id="s4" aria-hidden="true">
             <h1 class="head">Almost there…</h1>
             <div class="content" style="text-align:center;">
               <p id="slide5">One last little thing. Close your eyes for a second. Breathe. Think of one tiny memory that always makes you smile — I’ll meet you there.</p>
             </div>
           </section>
 
-          <!-- Slide 6: Final Reveal -->
-          <section class="slide" id="s5" aria-hidden="true" tabindex="0">
+          <!-- Slide 6: Final -->
+          <section class="slide" id="s5" aria-hidden="true">
             <div style="text-align:center">
               <div class="final-title" id="finalTitle">Happy Birthday, Antratica</div>
               <div class="final-sub" id="finalSub">May your day be gentle, wild and exactly yours.</div>
             </div>
           </section>
 
-          <!-- decorative particle layer -->
+          <!-- particles and confetti containers -->
           <div class="particles" aria-hidden="true"></div>
-
-          <!-- confetti canvas -->
           <div class="confetti" aria-hidden="true"></div>
 
         </div>
       </div>
 
       <!-- controls -->
-      <div class="controls" style="margin-top:4px;">
+      <div class="controls" style="margin-top:6px;">
         <div class="left-controls">
           <button class="btn ghost" id="backBtn" aria-label="Previous slide">← Back</button>
           <button class="btn" id="nextBtn" aria-label="Next slide">Next →</button>
@@ -400,9 +274,9 @@
 
   <!-- ---------- SCRIPTS: slide logic, animations, particles, confetti ---------- -->
   <script>
-    /* DOM */
+    // DOM refs
     const slides = Array.from(document.querySelectorAll('.slide'));
-    const dots   = Array.from(document.querySelectorAll('.dot'));
+    const dots = Array.from(document.querySelectorAll('.dot'));
     const nextBtn = document.getElementById('nextBtn');
     const backBtn = document.getElementById('backBtn');
     const pageInfo = document.getElementById('pageInfo');
@@ -412,176 +286,167 @@
     let idx = 0;
     const total = slides.length;
 
-    /* Utility: update UI state */
+    // Update UI
     function updateState(i){
-      slides.forEach((s, j)=> {
-        s.classList.toggle('active', j === i);
-        s.setAttribute('aria-hidden', j === i ? 'false' : 'true');
+      if(i < 0) i = 0;
+      if(i > total - 1) i = total - 1;
+      idx = i;
+
+      slides.forEach((s, j) => {
+        const active = j === i;
+        s.classList.toggle('active', active);
+        s.setAttribute('aria-hidden', active ? 'false' : 'true');
+        // reset scroll for long content when it becomes active
+        if(active) {
+          const long = s.querySelector('.long');
+          if(long) long.scrollTop = 0;
+        }
       });
-      dots.forEach((d,j)=> d.classList.toggle('active', j===i));
+
+      dots.forEach((d,j)=> d.classList.toggle('active', j === i));
       pageInfo.textContent = `${i+1} / ${total}`;
-      // small micro animation on content
+
+      // micro fade in for content
       const content = slides[i].querySelector('.content');
       if(content){
         content.style.opacity = 0;
-        setTimeout(()=> { content.style.transition = 'opacity 420ms ease'; content.style.opacity = 1; }, 40);
+        content.style.transition = 'opacity 420ms ease';
+        setTimeout(()=> content.style.opacity = 1, 40);
       }
-      // if last slide -> reveal confetti/particles
+
+      // trigger final reveal effects on last slide
       if(slides[i].id === 's5') {
         runFinalReveal();
       }
     }
 
-    nextBtn.addEventListener('click', ()=> { idx = Math.min(total-1, idx+1); updateState(idx); });
-    backBtn.addEventListener('click', ()=> { idx = Math.max(0, idx-1); updateState(idx); });
+    // navigation handlers
+    nextBtn.addEventListener('click', ()=> updateState(Math.min(total-1, idx+1)));
+    backBtn.addEventListener('click', ()=> updateState(Math.max(0, idx-1)));
 
-    // click anywhere on paper to advance (mobile friendly)
+    // click on paper advances (mobile-friendly). Only if click not on interactive controls.
     document.querySelector('.paper').addEventListener('click', (e)=>{
-      // avoid when clicking interactive elements (images etc.)
       if(e.target.closest('.btn')) return;
-      if(window.innerWidth < 900){ // only on mobile/tablet - but works on desktop too
-        idx = Math.min(total-1, idx+1);
-        updateState(idx);
-      }
+      // advance on most screens; user can still click controls
+      updateState(Math.min(total-1, idx+1));
     });
 
-    // keyboard navigation
+    // keyboard nav
     document.addEventListener('keydown', (e)=> {
-      if(e.key === 'ArrowRight' || e.key === 'Enter') { idx = Math.min(total-1, idx+1); updateState(idx); }
-      if(e.key === 'ArrowLeft') { idx = Math.max(0, idx-1); updateState(idx); }
+      if(e.key === 'ArrowRight' || e.key === 'Enter') updateState(Math.min(total-1, idx+1));
+      if(e.key === 'ArrowLeft' || e.key === 'Backspace') updateState(Math.max(0, idx-1));
     });
 
     // dots jump
-    dots.forEach(d => d.addEventListener('click', ()=> {
-      const i = Number(d.dataset.i);
-      idx = i;
-      updateState(i);
-    }));
+    dots.forEach(d => d.addEventListener('click', ()=> updateState(Number(d.dataset.i)) ));
 
     // initialize
     updateState(0);
 
     /* ---------------- particles (gentle floating bits) ---------------- */
-    const PARTICLE_COUNT = 14;
-    function makeParticles(){
-      for(let i=0;i<PARTICLE_COUNT;i++){
+    (function createParticles(){
+      const COUNT = 14;
+      for(let i=0;i<COUNT;i++){
         const el = document.createElement('div');
         el.className = 'particle';
-        const left = Math.random() * 100;
-        const top = Math.random() * 80;
-        el.style.left = left + '%';
-        el.style.top = top + '%';
-        el.style.opacity = (0.06 + Math.random()*0.12).toFixed(2);
-        el.style.transform = `scale(${0.5 + Math.random()*1.2})`;
+        el.style.position = 'absolute';
+        el.style.left = (5 + Math.random()*90) + '%';
+        el.style.top = (6 + Math.random()*80) + '%';
+        el.style.width = (4 + Math.random()*8) + 'px';
+        el.style.height = el.style.width;
+        el.style.borderRadius = '50%';
+        el.style.background = 'rgba(255,107,138,' + (0.04 + Math.random()*0.08) + ')';
+        el.style.filter = 'blur(0.8px)';
+        el.style.pointerEvents = 'none';
         particlesEl.appendChild(el);
-        // gentle float animation
-        const dur = 8000 + Math.random()*9000;
+        const dur = 7000 + Math.random()*9000;
         el.animate([
           { transform: `translateY(0px) translateX(0px)` },
-          { transform: `translateY(${10 + Math.random()*20}px) translateX(${(-6 + Math.random()*12)}px)` },
+          { transform: `translateY(${6 + Math.random()*22}px) translateX(${(-6 + Math.random()*12)}px)` },
           { transform: `translateY(0px) translateX(0px)` }
         ], { duration: dur, iterations: Infinity, easing: 'ease-in-out', delay: Math.random()*2000 });
       }
-    }
-    makeParticles();
+    })();
 
-    /* ---------------- handwriting-like typewriter reveal for first slide ---------------- */
+    /* ---------------- typewriter for first slide (keeps your text) ---------------- */
     (function typeFirst(){
       const el = document.getElementById('slide1');
       if(!el) return;
-      const full = el.textContent.trim();
+      const full = el.textContent || el.innerText || '';
       el.textContent = '';
       el.classList.remove('writing');
-      let p=0;
+      let p = 0;
       (function step(){
         p++;
         el.textContent = full.slice(0,p);
-        if(p < full.length) setTimeout(step, 36 + Math.random()*40);
+        if(p < full.length) setTimeout(step, 36 + Math.random()*36);
         else el.classList.add('writing'); // caret resumes
       })();
     })();
 
     /* ---------------- final reveal: soft hearts confetti ---------------- */
     function runFinalReveal(){
-      // create ephemeral hearts floating up, soft style
+      // guard: run only once
       if(confettiEl.dataset.fired) return;
       confettiEl.dataset.fired = '1';
 
-      // little heart SVG generator
-      function makeHeart(x){
-        const n = document.createElement('div');
-        n.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 20s-7-4.35-9-6.8C-0.5 9.6 3.4 4 7.5 5.2 9 5.8 10 7.4 12 9.2c2-1.8 3-3.4 4.5-4 4.1-1.2 8 4.4 4.5 8.9-2 2.4-9 6.9-9 6.9z" fill="${Math.random()>0.5? '#ff7b9c' : '#ffd1c9'}" opacity="0.95"/>
-        </svg>`;
-        n.style.position = 'absolute';
-        n.style.left = (x|| (10 + Math.random()*80)) + '%';
-        n.style.bottom = '-6px';
-        n.style.pointerEvents = 'none';
-        n.style.opacity = '0.0';
-        confettiEl.appendChild(n);
-        const duration = 2800 + Math.random()*1200;
-        // animate up
-        n.animate([
-          { transform: `translateY(0px) scale(0.8)`, opacity: 0 },
-          { transform: `translateY(-140px) scale(1.05)`, opacity: 1 },
-          { transform: `translateY(-320px) scale(0.9)`, opacity: 0 }
-        ], { duration, easing: 'cubic-bezier(.2,.9,.3,1)' });
-        // remove after
-        setTimeout(()=> n.remove(), duration+120);
+      // use canvas-confetti for burst
+      if(window.confetti){
+        // gentle bursts
+        confetti({ particleCount: 30, spread: 120, origin: { y: 0.2 }, gravity: 0.6, ticks: 200, scalar: 0.9, colors: ['#ff7b9c','#ffd1c9','#fff4e6'] });
+        setTimeout(()=> confetti({ particleCount: 60, spread: 220, origin: { y: 0.1 }, gravity: 0.7, ticks: 200, colors: ['#ff7b9c','#ffd1c9','#fff4e6'] }), 300);
+        setTimeout(()=> confetti({ particleCount: 100, spread: 260, origin: { y: 0.1 }, gravity: 0.6, ticks: 200, colors: ['#ff7b9c','#ffd1c9','#fff4e6'] }), 900);
       }
 
-      // burst
-      for(let i=0;i<10;i++){
-        setTimeout(()=> makeHeart(), i*130);
+      // additional floating heart SVGs (visual-only)
+      function makeHeart(x){
+        const n = document.createElement('div');
+        n.style.position = 'absolute';
+        n.style.left = (x || (8 + Math.random()*84)) + '%';
+        n.style.bottom = '-6px';
+        n.style.pointerEvents = 'none';
+        n.style.opacity = '0';
+        n.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 20s-7-4.35-9-6.8C-0.5 9.6 3.4 4 7.5 5.2 9 5.8 10 7.4 12 9.2c2-1.8 3-3.4 4.5-4 4.1-1.2 8 4.4 4.5 8.9-2 2.4-9 6.9-9 6.9z" fill="${Math.random()>0.5? '#ff7b9c' : '#ffd1c9'}" opacity="0.95"/></svg>`;
+        confettiEl.appendChild(n);
+        const duration = 2600 + Math.random()*1200;
+        n.animate([
+          { transform: 'translateY(0px) scale(0.85)', opacity: 0 },
+          { transform: `translateY(-160px) scale(1.05)`, opacity: 1 },
+          { transform: `translateY(-320px) scale(0.9)`, opacity: 0 }
+        ], { duration, easing: 'cubic-bezier(.2,.9,.3,1)' });
+        setTimeout(()=> n.remove(), duration + 160);
       }
-      // gentle rain
-      const rain = setInterval(()=> {
-        makeHeart();
-      }, 220);
+
+      // burst and rain
+      for(let i=0;i<10;i++) setTimeout(()=> makeHeart(), i*120);
+      const rain = setInterval(()=> makeHeart(), 220);
       setTimeout(()=> clearInterval(rain), 4200);
     }
 
-    /* ---------------- helper: auto-scroll long slide into view when active ---------------- */
-    const observer = new MutationObserver(()=> {
-      const active = document.querySelector('.slide.active .long');
-      if(active){
-        // reset scroll to top
-        active.scrollTop = 0;
-      }
-    });
-    observer.observe(document.querySelector('.paper'), { attributes: true, childList: false, subtree: true, characterData: false });
-
-    /* ---------------- accessibility improvements: focus on slide when changed ---------------- */
+    /* ---------------- focus management (accessibility) ---------------- */
     function focusActive(){
       const active = document.querySelector('.slide.active');
-      if(active) {
+      if(active){
         active.setAttribute('tabindex','0');
         active.focus({ preventScroll:true });
       }
     }
-    // call focusActive after state update
-    const origUpdate = updateState;
-    // (we already call updateState directly; just ensure focus)
-    // small patch: after each state change, call focusActive
-    const originalNext = nextBtn.onclick;
-    // We'll monkey-patch updateState by wrapping:
-    // but simpler: add a small interval to check and focus
-    let lastIdx = idx;
-    setInterval(()=> {
-      if(lastIdx !== idx) { lastIdx = idx; focusActive(); }
-    }, 120);
+    // run focus when state changes
+    let last = idx;
+    setInterval(()=> { if(last !== idx){ last = idx; focusActive(); } }, 120);
 
-    /* ---------------- quick-edit tips in console (optional) ---------------- */
-    console.log("Quick-edit: change text by visiting element ids: slide1, slide2, slide3, slide4, slide5, finalTitle, finalSub");
-
-    /* Prevent accidental double-click selecting text */
+    /* ---------------- prevent accidental selection except in long content ---------------- */
     document.addEventListener('selectstart', (e)=> {
-      // allow selection inside long content
       if(e.target.closest('.long')) return;
       e.preventDefault();
     });
+
+    /* ---------------- console quick-edit tip ---------------- */
+    console.log("Edit text via ids: slide1, slide2, slide3, slide4, slide5, finalTitle, finalSub");
+
+    /* final safety: ensure initial slide content is visible */
+    window.addEventListener('load', ()=> { updateState(0); });
   </script>
 </body>
 </html>
-
-
