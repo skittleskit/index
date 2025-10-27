@@ -12,7 +12,6 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js" defer></script>
 
   <style>
-    /* ---------- THEME: Whimsical Sketchbook ---------- */
     :root{
       --paper-bg: #fffdf9;
       --paper-edge: #efe6dd;
@@ -31,7 +30,6 @@
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;font-family:var(--hand);background:linear-gradient(180deg,#f7f3ee 0%,#fbf9f6 100%);color:var(--ink);-webkit-font-smoothing:antialiased}
 
-    /* center stage */
     .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px}
 
     .book{
@@ -44,7 +42,6 @@
       display:flex;flex-direction:column;gap:14px;position:relative;overflow:visible;
     }
 
-    /* header area - washi tape + title */
     .header{display:flex;align-items:center;gap:12px}
     .washi{
       width:120px;height:42px;border-radius:6px;display:flex;align-items:center;justify-content:center;
@@ -53,13 +50,13 @@
     }
     .title{font-family:var(--serif);color:var(--muted);font-size:18px}
 
-    /* slides container */
     .slides{position:relative;display:flex;align-items:center;justify-content:center;min-height:var(--slide-h);padding:18px}
     .paper{
       width:100%;max-width:880px;background:var(--paper-bg);border-radius:12px;padding:20px;border:1px solid var(--paper-edge);
       box-shadow:0 8px 28px rgba(8,8,8,0.06);position:relative;overflow:hidden;
       min-height:calc(var(--slide-h) - 8px);
     }
+
     .paper::before{
       content:"";position:absolute;inset:0;pointer-events:none;
       background-image:
@@ -68,24 +65,24 @@
       opacity:0.6;
     }
 
-    /* slide stack */
     .slide{
       position:absolute;inset:0;padding:20px;display:none;flex-direction:column;gap:10px;align-items:center;justify-content:center;text-align:center;
     }
     .slide.active{display:flex;z-index:3;animation:slideIn 420ms cubic-bezier(.22,.9,.3,1)}
     @keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-    /* content */
     .head{font-size:26px;margin:6px 0;font-family:var(--hand);color:var(--accent-ink)}
     .content{max-width:760px;text-align:left;font-size:18px;line-height:1.6;color:var(--ink);padding:6px 4px}
     .note{font-size:14px;color:var(--muted)}
-    .long{max-height:calc(var(--slide-h) - 160px);overflow-y:auto;padding-right:10px;-webkit-overflow-scrolling:touch}
+    .long{max-height:calc(var(--slide-h) - 160px);overflow-y:auto;padding-right:10px;-webkit-overflow-scrolling:touch;pointer-events:auto}
 
-    /* doodles / stickers */
+    /* AOT slide style (subtle variant) */
+    .aot .head{font-family:var(--serif);font-weight:700;color:#1f1b1c;letter-spacing:0.6px}
+    .aot .content{font-family:var(--serif);font-style:italic;color:#1a1a1a;background:linear-gradient(180deg, rgba(0,0,0,0.01), transparent);padding:12px;border-radius:8px;border-left:4px solid rgba(10,10,10,0.06)}
+    .aot .emblem{width:52px;height:52px;opacity:0.9;margin-bottom:10px;filter:grayscale(0.08) contrast(0.95)}
+
     .doodle-svg{position:absolute;right:18px;top:10px;width:140px;height:140px;pointer-events:none;transform:rotate(-8deg);opacity:0.95}
-    .sticker{position:absolute;left:18px;top:8px;width:96px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);color:#5b4d3a;background:linear-gradient(90deg,#fcefd9,#f4dfbd);transform:rotate(-6deg);box-shadow:0 10px 18px rgba(0,0,0,0.05)}
 
-    /* controls */
     .controls{display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:12px}
     .left-controls{display:flex;gap:8px;align-items:center}
     .btn{background:#fff;border:1px solid rgba(0,0,0,0.06);padding:10px 14px;border-radius:10px;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,0.04);transition:transform .15s}
@@ -93,51 +90,44 @@
     .btn.ghost{background:transparent;border:none;color:var(--muted)}
 
     .dots{display:flex;gap:8px;align-items:center}
-    .dot{width:10px;height:10px;border-radius:50%;background:#efe7df;box-shadow:inset 0 -2px 0 rgba(0,0,0,0.06);transition:transform .18s}
+    .dot{width:10px;height:10px;border-radius:50%;background:#efe7df;box-shadow:inset 0 -2px 0 rgba(0,0,0,0.06);transition:transform .18s;cursor:pointer}
     .dot.active{background:var(--heart);transform:scale(1.15);box-shadow:0 8px 18px rgba(255,107,138,0.12)}
 
     .page-info{font-family:var(--serif);color:var(--muted);font-size:13px}
 
-    /* final title */
     .final-title{font-size:34px;color:var(--heart);font-weight:700;text-shadow:0 10px 30px rgba(255,107,138,0.06)}
     .final-sub{font-size:16px;color:var(--muted);margin-top:8px}
 
-    /* particles/hearts */
     .particles{position:absolute;inset:0;pointer-events:none;z-index:2}
     .confetti{position:absolute;inset:0;pointer-events:none;z-index:9999}
 
-    /* typewriter caret */
     .writing{white-space:pre-wrap;border-right:2px solid rgba(0,0,0,0.08);animation:caret 1s steps(1) infinite}
     @keyframes caret{0%{border-color:rgba(0,0,0,0.06)}50%{border-color:rgba(0,0,0,0.22)}100%{border-color:rgba(0,0,0,0.06)}}
 
-    /* responsive tweak */
     @media(max-width:760px){
       .book{padding:14px}
       .paper{padding:14px}
       .head{font-size:20px}
       .content{font-size:16px}
       .doodle-svg{width:98px;height:98px;right:8px;top:8px}
-      .sticker{left:12px;top:6px;width:78px;height:32px}
+      .aot .content{font-size:15px}
+      .aot .emblem{width:40px;height:40px}
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="book" role="main" aria-label="Birthday scrapbook for Antratica">
+    <div class="book">
 
-      <!-- header -->
       <div class="header">
         <div class="washi">A little thing</div>
-        <div class="title">For <strong>Antratica</strong> — open slowly</div>
+        <div class="title">For <strong>Antratica</strong></div>
       </div>
 
-      <!-- slides -->
-      <div class="slides" aria-live="polite">
-        <div class="paper" role="region" aria-label="Slide area">
+      <div class="slides">
+        <div class="paper">
 
-          <!-- sticker + doodle -->
-          <div class="sticker">PLAYLIST</div>
-
+          <!-- small sketchy doodle -->
           <svg class="doodle-svg" viewBox="0 0 140 140" aria-hidden="true" preserveAspectRatio="xMinYMin">
             <g fill="none" stroke="#e6c9b2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <path d="M8 18 C36 8, 84 6, 132 20" opacity="0.95"/>
@@ -145,57 +135,64 @@
               <circle cx="28" cy="92" r="3.2" fill="#ffd8c4" stroke="none"/>
               <path d="M74 98 C78 94, 92 90, 122 96" stroke="#ffd8c4" opacity="0.6"/>
             </g>
-            <g transform="translate(8,8)" fill="#ffd1d9" opacity="0.95">
-              <path d="M80 10 c0 -6 7 -8 11 -4 4 4 2 10 -3 14 -5 -4 -8 -6 -8 -10z"/>
-            </g>
           </svg>
 
-          <!-- SLIDE 1 (user exact text) -->
-          <section class="slide" id="s0" aria-hidden="false">
+          <!-- SLIDE 1 -->
+          <section class="slide" id="s0">
             <h2 class="head">Hey —</h2>
             <div class="content" style="text-align:left">
-              <!-- EXACT text provided by you (unchanged) -->
               <p id="slide1" class="writing">lol, I hope you don't feel as weird as i do while creating this. Anyways, i always wanted to try this.</p>
             </div>
             <div style="margin-top:12px"><small class="note">Tap / click anywhere to move forward</small></div>
           </section>
 
-          <!-- SLIDE 2 (rewritten tastefully in your voice) -->
+          <!-- SLIDE 2 -->
           <section class="slide" id="s1" aria-hidden="true">
             <h2 class="head">To my… well, whatever you are</h2>
             <div class="content">
-              <p>I don’t have the words that do you justice, so I’ll keep this small: you quietly rearranged how brightness fits into my days — a steady laugh, a stubborn little wisdom, and a place I go when the world gets noisy. Thank you for being you.</p>
+              <p>I don’t know why this feels so intimate lol when the bond we have is evidently mutually platonic. Maybe it's because i have never gone out of my way to do anything special for someone...</p>
             </div>
           </section>
 
-          <!-- SLIDE 3 (user exact long text) -->
+          <!-- SLIDE 3 -->
           <section class="slide" id="s2" aria-hidden="true">
             <h2 class="head">So —</h2>
             <div class="content long" id="slide3" tabindex="0">
-              <!-- EXACT text provided by you (unchanged) -->
-              <p>Clearly the previous slide was cringe since it was written by GPT.</p>
-              <p>So I’ll have to write something myself —</p>
-
-              <p>While creating this, I remembered a little something from last 31st Dec… or 1st Jan, to be precise.</p>
-
-              <p>When you sent a “HAPPY NEW YEAR” text on Telegram — and then deleted it, because apparently you believed “why should I get a special treatment?”</p>
-
-              <p>Well… I still don’t know what to say about that, because you couldn’t have said anything more stupid over such a trivial matter.</p>
-
-              <p>I genuinely wouldn’t have cared whether you wished me or not. But the fact that you deleted it — that was disappointing.</p>
-
-              <p>I don’t care if I was/am “special” or not. But I <strong>have</strong> treated you specially in many ways, even in the smallest details — and I’ll never hesitate to admit that.</p>
-
-              <div style="height:12px"></div>
-              <p class="note">(Scroll if it looks long on small screens)</p>
+              <p>Though i am not good with words, I still have plenty to say.
+ We have had our disagreements, There have been times when i have behaved strangely with you, But know that none of that has ever made me harbor any ill feelings towards you. I have and i will, always hope good for you. 
+lol, i am having a really hard time being nice with you...</p>
             </div>
           </section>
 
-          <!-- SLIDE 4: Memories -->
+          <!-- SLIDE: Well — -->
+          <section class="slide" id="s2b" aria-hidden="true">
+            <h2 class="head">Well —</h2>
+            <div class="content">
+              <p>I don't usually think about it, but now looking back at those late night VCs gives a faint bittersweet feeling of nostalgia that i will always look back as times when the life was peaceful.</p>
+            </div>
+          </section>
+
+          <!-- AOT slide: important side note -->
+          <section class="slide aot" id="s2a" aria-hidden="true">
+            <!-- small emblem inspired sketch (fits sketchbook theme) -->
+            <svg class="emblem" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <g fill="none" stroke="#1b1b1b" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M28 6 L32 18 L44 20 L34 28 L36 40 L28 34 L20 40 L22 28 L12 20 L24 18 Z" fill="#f4e6e6" opacity="0.9"/>
+              </g>
+            </svg>
+
+            <h2 class="head" style="font-size:20px;letter-spacing:0; margin-top:6px; text-transform:lowercase; color:#151212;">important side note:</h2>
+            <div class="content" style="text-align:center; max-width:640px;">
+              <p style="margin:8px 0;">Attack on titan is the greatest piece of fiction ever created!</p>
+              <p style="margin:10px 0 0;color:var(--muted);font-size:13px;">Attack on Mid*</p>
+            </div>
+          </section>
+
+          <!-- SLIDE 4 (photos) -->
           <section class="slide" id="s3" aria-hidden="true">
             <h2 class="head">A few moments</h2>
             <div class="content" style="text-align:center">
-              <p>Here are some moments I wish I could pack into one room: late-night talks, stubborn wisdom, tiny shared playlists, and the way you make an ordinary day feel like a scene from a movie.</p>
+              <p>Here are some moments...</p>
               <div style="display:flex;gap:12px;justify-content:center;margin-top:14px;flex-wrap:wrap">
                 <div style="width:150px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
                 <div style="width:150px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
@@ -204,134 +201,141 @@
             </div>
           </section>
 
-          <!-- SLIDE 5: Build-up -->
+          <!-- SLIDE 5 -->
           <section class="slide" id="s4" aria-hidden="true">
             <h2 class="head">Almost there…</h2>
             <div class="content" style="text-align:center">
-              <p>One last little thing: close your eyes for a second. Breathe. Think of one tiny memory that always makes you smile — I’ll meet you there.</p>
+              <p>One last little thing...</p>
             </div>
           </section>
 
-          <!-- SLIDE 6: Final Reveal -->
-          <section class="slide" id="s5" aria-hidden="true">
+          <!-- FINAL SLIDE -->
+          <section class="slide" id="s5" aria-hidden="true" data-final="true">
             <div style="text-align:center">
-              <div class="final-title" id="finalTitle">Happy Birthday, Antratica</div>
-              <div class="final-sub" id="finalSub">May your day be gentle, whimsical and exactly yours.</div>
+              <div class="final-title" id="finalTitle">Happy Birthday, Mansi</div>
+              <div class="final-sub" id="finalSub">May whatever you manifest 24/7 comes true.</div>
             </div>
           </section>
 
-          <!-- particle layers -->
-          <div class="particles" aria-hidden="true"></div>
-          <div class="confetti" aria-hidden="true"></div>
+          <div class="particles"></div>
+          <div class="confetti"></div>
 
         </div>
       </div>
 
-      <!-- controls -->
       <div class="controls">
         <div class="left-controls">
-          <button class="btn ghost" id="backBtn" aria-label="Previous slide">← Back</button>
-          <button class="btn" id="nextBtn" aria-label="Next slide">Next →</button>
+          <button class="btn ghost" id="backBtn">← Back</button>
+          <button class="btn" id="nextBtn">Next →</button>
         </div>
 
         <div style="display:flex;align-items:center;gap:12px">
-          <div class="dots" aria-hidden>
-            <div class="dot active" data-i="0"></div>
-            <div class="dot" data-i="1"></div>
-            <div class="dot" data-i="2"></div>
-            <div class="dot" data-i="3"></div>
-            <div class="dot" data-i="4"></div>
-            <div class="dot" data-i="5"></div>
-          </div>
-          <div class="page-info" id="pageInfo">1 / 6</div>
+          <div class="dots" id="dotsContainer" aria-hidden="true"></div>
+          <div class="page-info" id="pageInfo">1 / 7</div>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- ---------- SCRIPT: slides, particles, typewriter, confetti ---------- -->
   <script>
-    // DOM refs
     const slides = Array.from(document.querySelectorAll('.slide'));
-    const dots = Array.from(document.querySelectorAll('.dot'));
     const nextBtn = document.getElementById('nextBtn');
     const backBtn = document.getElementById('backBtn');
     const pageInfo = document.getElementById('pageInfo');
+    const dotsContainer = document.getElementById('dotsContainer');
     const particlesEl = document.querySelector('.particles');
     const confettiEl = document.querySelector('.confetti');
 
     let idx = 0;
     const total = slides.length;
+    pageInfo.textContent = `1 / ${total}`;
     let navLocked = false;
+    function lock(ms=420){ navLocked=true; setTimeout(()=>navLocked=false,ms); }
 
-    function lock(ms = 420){ navLocked = true; setTimeout(()=> navLocked = false, ms); }
+    // generate dots dynamically (so count always matches slides)
+    const dots = [];
+    for(let i=0;i<total;i++){
+      const d = document.createElement('div');
+      d.className = 'dot';
+      d.dataset.i = i;
+      d.addEventListener('click', ()=> updateState(i));
+      dotsContainer.appendChild(d);
+      dots.push(d);
+    }
 
     function updateState(i){
       if(navLocked) return; lock();
-      if(i < 0) i = 0; if(i >= total) i = total-1; idx = i;
+      if(i<0) i=0; if(i>=total) i=total-1; idx=i;
 
       slides.forEach((s,j)=>{
-        const active = j === i;
+        const active = j===i;
         s.classList.toggle('active', active);
-        s.setAttribute('aria-hidden', active ? 'false' : 'true');
+        s.setAttribute('aria-hidden', !active);
         if(active){
+          // focus any long scroll to allow keyboard scrolling
           const long = s.querySelector('.long');
           if(long) long.scrollTop = 0;
-          setTimeout(()=> { s.setAttribute('tabindex','0'); s.focus({preventScroll:true}); }, 60);
-        } else s.removeAttribute('tabindex');
+          setTimeout(()=> { s.setAttribute('tabindex','0'); s.focus({preventScroll:true}); }, 40);
+        } else {
+          s.removeAttribute('tabindex');
+        }
       });
 
-      dots.forEach((d,j)=> d.classList.toggle('active', j===i));
+      dots.forEach((d,j)=> d.classList.toggle('active', j===i) );
       pageInfo.textContent = `${i+1} / ${total}`;
 
-      // gently fade content for micro polish
-      const content = slides[i].querySelector('.content');
-      if(content){
-        content.style.opacity = 0;
-        content.style.transition = 'opacity 360ms ease';
-        setTimeout(()=> content.style.opacity = 1, 40);
-      }
-
-      if(slides[i].id === 's5') runFinalReveal();
+      // if this is final slide (marked with data-final)
+      if( slides[i].dataset.final === "true" ) runFinalReveal();
     }
 
-    // nav events
-    nextBtn.addEventListener('click', ()=> updateState(Math.min(total-1, idx+1)));
-    backBtn.addEventListener('click', ()=> updateState(Math.max(0, idx-1)));
+    nextBtn.addEventListener('click', ()=> updateState(idx+1));
+    backBtn.addEventListener('click', ()=> updateState(idx-1));
 
-    // click paper to advance except when clicking long-scroll or buttons
+    // click paper to advance — but ignore clicks inside .long (so scroll works)
     document.querySelector('.paper').addEventListener('click', (e)=>{
       if(e.target.closest('.btn')) return;
-      if(e.target.closest('.long')) return;
-      updateState(Math.min(total-1, idx+1));
+      if(e.target.closest('.long')) return; // allow scrolling/clicks inside long area
+      updateState(idx+1);
     });
 
-    // keyboard nav
-    document.addEventListener('keydown', (e)=>{
-      if(e.key === 'ArrowRight' || e.key === 'Enter') updateState(Math.min(total-1, idx+1));
-      if(e.key === 'ArrowLeft' || e.key === 'Backspace' ) updateState(Math.max(0, idx-1));
+    // keyboard navigation
+    document.addEventListener('keydown', e=>{
+      if(e.key === 'ArrowRight' || e.key === 'Enter') updateState(idx+1);
+      if(e.key === 'ArrowLeft' || e.key === 'Backspace') updateState(idx-1);
     });
 
-    // dots navigation
-    dots.forEach(d => d.addEventListener('click', ()=> updateState(Number(d.dataset.i)) ));
-
-    // initialize
+    // init
     updateState(0);
 
-    /* ---------------- particles (gentle floating sketch dots) ---------------- */
+    /* typewriter for first slide (preserves your text) */
+    (function typeFirst(){
+      const el = document.getElementById('slide1');
+      if(!el) return;
+      const full = el.textContent || el.innerText || '';
+      el.textContent = '';
+      let p = 0;
+      (function step(){
+        p++;
+        el.textContent = full.slice(0,p);
+        if(p < full.length) setTimeout(step, 32 + Math.random()*30);
+        else el.classList.add('writing'); // show caret after typing finished
+      })();
+    })();
+
+    /* small floating particles for ambiance */
     (function makeParticles(){
-      const N = 14;
+      const N = 12;
       for(let i=0;i<N;i++){
         const el = document.createElement('div');
-        el.style.position='absolute';
-        el.style.left = (6 + Math.random()*88) + '%';
-        el.style.top  = (6 + Math.random()*80) + '%';
-        const size = (4 + Math.random()*8);
+        el.style.position = 'absolute';
+        el.style.left = (4 + Math.random()*92) + '%';
+        el.style.top  = (6 + Math.random()*84) + '%';
+        const size = (4 + Math.random()*7);
         el.style.width = size + 'px';
         el.style.height = size + 'px';
         el.style.borderRadius = '50%';
-        el.style.background = 'rgba(184,111,80,' + (0.04 + Math.random()*0.09) + ')';
+        el.style.background = 'rgba(184,111,80,' + (0.04 + Math.random()*0.08) + ')';
         el.style.filter = 'blur(0.9px)';
         el.style.pointerEvents = 'none';
         particlesEl.appendChild(el);
@@ -340,40 +344,23 @@
           { transform: 'translateY(0px) translateX(0px)' },
           { transform: `translateY(${6 + Math.random()*22}px) translateX(${(-6 + Math.random()*12)}px)` },
           { transform: 'translateY(0px) translateX(0px)' }
-        ],{ duration: dur, iterations: Infinity, easing: 'ease-in-out', delay: Math.random()*2000 });
+        ], { duration: dur, iterations: Infinity, easing: 'ease-in-out', delay: Math.random()*2000 });
       }
     })();
 
-    /* --------- typewriter reveal for slide1 (user exact text preserved) --------- */
-    (function typeFirst(){
-      const el = document.getElementById('slide1');
-      if(!el) return;
-      const full = (el.textContent || el.innerText || '').trim();
-      el.textContent = '';
-      // remove caret during typing to avoid quirky border
-      el.classList.remove('writing');
-      let p = 0;
-      (function step(){
-        p++;
-        el.textContent = full.slice(0,p);
-        if(p < full.length) setTimeout(step, 28 + Math.random()*36);
-        else el.classList.add('writing');
-      })();
-    })();
-
-    /* ---------------- final reveal: confetti + floating hearts ---------------- */
+    /* final reveal: stronger confetti + floating hearts (uses canvas-confetti if available) */
     function runFinalReveal(){
       if(confettiEl.dataset.fired) return;
       confettiEl.dataset.fired = '1';
 
-      // canvas confetti bursts (if library loaded)
+      // canvas confetti bursts (two-stage + sprinkle)
       if(window.confetti){
-        confetti({ particleCount: 28, spread: 120, origin: { y: 0.2 }, colors: ['#ff7b9c','#ffd1c9','#fff4e6'] });
-        setTimeout(()=> confetti({ particleCount: 60, spread: 220, origin:{y:0.12}, colors: ['#ff7b9c','#ffd1c9','#fff4e6'] }), 300);
-        setTimeout(()=> confetti({ particleCount: 100, spread: 260, origin:{y:0.08}, colors: ['#ff7b9c','#ffd1c9','#fff4e6'] }), 900);
+        confetti({ particleCount: 40, spread: 130, origin: { y: 0.2 }, colors:['#ff7b9c','#ffd1c9','#fff4e6'] });
+        setTimeout(()=> confetti({ particleCount: 80, spread: 230, origin: { y: 0.12 }, colors:['#ff7b9c','#ffd1c9','#fff4e6'] }), 260);
+        setTimeout(()=> confetti({ particleCount: 120, spread: 280, origin: { y: 0.08 }, colors:['#ff7b9c','#ffd1c9','#fff4e6'] }), 700);
       }
 
-      // floating hearts (SVG)
+      // floating hearts to complement confetti (small SVGs)
       function makeHeart(x){
         const n = document.createElement('div');
         n.style.position='absolute';
@@ -393,19 +380,16 @@
         setTimeout(()=> n.remove(), duration + 180);
       }
 
-      for(let i=0;i<10;i++) setTimeout(()=> makeHeart(), i*120);
-      const rain = setInterval(()=> makeHeart(), 220);
-      setTimeout(()=> clearInterval(rain), 4200);
+      for(let i=0;i<12;i++) setTimeout(()=> makeHeart(), i*110);
+      const rain = setInterval(()=> makeHeart(), 180);
+      setTimeout(()=> clearInterval(rain), 4600);
     }
 
-    // Prevent accidental select except inside long scroll areas
+    // prevent accidental select on most of the page (allow selection inside .long)
     document.addEventListener('selectstart', (e)=>{ if(e.target.closest('.long')) return; e.preventDefault(); });
 
-    // Debug tip
-    console.log('Quick-edit ids: slide1, slide2, slide3, slide4, slide5, finalTitle, finalSub');
-
-    // Ensure first slide visible after load
-    window.addEventListener('load', ()=> updateState(0));
+    // helpful console tip
+    console.log('Edit text nodes by id: slide1, slide3, finalTitle, finalSub (or directly in HTML).');
   </script>
 </body>
 </html>
