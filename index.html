@@ -8,368 +8,232 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
-  <!-- Confetti library -->
+  <!-- Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js" defer></script>
 
   <style>
-    :root {
-      --bg-paper: #fbf7f3;
-      --paper-edge: #efeae3;
-      --ink: #222023;
-      --muted: #6b6a66;
-      --accent: #e7c9b0;
+    /* ---------- THEME: Whimsical Sketchbook ---------- */
+    :root{
+      --paper-bg: #fffdf9;
+      --paper-edge: #efe6dd;
+      --ink: #231f20;
+      --muted: #6b675f;
+      --accent-ink: #b86f50;
       --heart: #ff6b8a;
       --maxw: 980px;
       --radius: 14px;
       --hand: "Patrick Hand", "Segoe UI", Arial, sans-serif;
       --serif: "Libre Baskerville", Georgia, serif;
-      --slide-height: 72vh;
-      --gap: 18px;
-      --mobile-break: 760px;
+      --slide-h: 70vh;
+      --gutter: 18px;
     }
 
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: linear-gradient(180deg, #f7f4ef 0%, #fbf8f4 100%);
-      color: var(--ink);
-      font-family: var(--hand);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:var(--hand);background:linear-gradient(180deg,#f7f3ee 0%,#fbf9f6 100%);color:var(--ink);-webkit-font-smoothing:antialiased}
+
+    /* center stage */
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px}
+
+    .book{
+      width:100%;
+      max-width:var(--maxw);
+      background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.99));
+      border-radius:16px;
+      padding:20px;
+      box-shadow: 0 28px 60px rgba(12,12,15,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+      display:flex;flex-direction:column;gap:14px;position:relative;overflow:visible;
     }
 
-    .wrap {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 28px;
+    /* header area - washi tape + title */
+    .header{display:flex;align-items:center;gap:12px}
+    .washi{
+      width:120px;height:42px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+      transform:rotate(-6deg);font-family:var(--serif);font-weight:700;color:var(--muted);
+      background:linear-gradient(90deg,#f7e6d0,#f2dcb4);box-shadow:0 8px 18px rgba(0,0,0,0.06)
     }
+    .title{font-family:var(--serif);color:var(--muted);font-size:18px}
 
-    .book {
-      width: 100%;
-      max-width: var(--maxw);
-      background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.98));
-      border-radius: 12px;
-      padding: 22px;
-      box-shadow: 0 26px 60px rgba(12,12,15,0.10), inset 0 1px 0 rgba(255,255,255,0.6);
-      display: flex;
-      flex-direction: column;
-      gap: var(--gap);
-      position: relative;
-      overflow: visible;
+    /* slides container */
+    .slides{position:relative;display:flex;align-items:center;justify-content:center;min-height:var(--slide-h);padding:18px}
+    .paper{
+      width:100%;max-width:880px;background:var(--paper-bg);border-radius:12px;padding:20px;border:1px solid var(--paper-edge);
+      box-shadow:0 8px 28px rgba(8,8,8,0.06);position:relative;overflow:hidden;
+      min-height:calc(var(--slide-h) - 8px);
     }
-
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .tape {
-      width: 120px;
-      height: 42px;
-      background: linear-gradient(90deg, #f1dcbf, #f7e9d0);
-      border-radius: 6px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.06);
-      transform: rotate(-6deg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: var(--muted);
-      font-family: var(--serif);
-      font-size: 13px;
-    }
-    .title {
-      font-size: 18px;
-      color: var(--muted);
-      font-family: var(--serif);
-    }
-
-    .slides {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: var(--slide-height);
-      max-height: calc(var(--slide-height) * 1.1);
-      padding: 16px;
-    }
-
-    .paper {
-      width: 100%;
-      max-width: 860px;
-      background: linear-gradient(180deg, #fff 0%, #fffcfb 100%);
-      border-radius: 12px;
-      padding: 22px;
-      box-shadow: 0 8px 26px rgba(18,18,18,0.06);
-      border: 1px solid var(--paper-edge);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .paper::before {
-      content: "";
-      position: absolute;
-      inset: 0;
+    .paper::before{
+      content:"";position:absolute;inset:0;pointer-events:none;
       background-image:
-        radial-gradient(circle at 10% 15%, rgba(0,0,0,0.02) 0px, transparent 22%),
-        linear-gradient(90deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01));
-      opacity: 0.5;
-      pointer-events: none;
+        radial-gradient(circle at 8% 12%, rgba(0,0,0,0.02), transparent 18%),
+        linear-gradient(180deg, rgba(255,255,255,0.01), transparent 40%);
+      opacity:0.6;
     }
 
-    .slide {
-      position: absolute;
-      inset: 0;
-      padding: 20px;
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
+    /* slide stack */
+    .slide{
+      position:absolute;inset:0;padding:20px;display:none;flex-direction:column;gap:10px;align-items:center;justify-content:center;text-align:center;
     }
-    .slide.active {
-      display: flex;
-      z-index: 3;
-      animation: slideIn 420ms cubic-bezier(.22,.9,.3,1);
-    }
-    @keyframes slideIn {
-      from { transform: translateY(10px); opacity: 0 }
-      to { transform: translateY(0); opacity: 1 }
-    }
+    .slide.active{display:flex;z-index:3;animation:slideIn 420ms cubic-bezier(.22,.9,.3,1)}
+    @keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-    .content {
-      max-width: 740px;
-      text-align: left;
-      font-size: 18px;
-      line-height: 1.6;
-      color: var(--ink);
-      padding: 6px 4px;
-    }
-    .long {
-      max-height: calc(var(--slide-height) - 120px);
-      overflow-y: auto;
-      padding-right: 12px;
-      -webkit-overflow-scrolling: touch;
-    }
+    /* content */
+    .head{font-size:26px;margin:6px 0;font-family:var(--hand);color:var(--accent-ink)}
+    .content{max-width:760px;text-align:left;font-size:18px;line-height:1.6;color:var(--ink);padding:6px 4px}
+    .note{font-size:14px;color:var(--muted)}
+    .long{max-height:calc(var(--slide-h) - 160px);overflow-y:auto;padding-right:10px;-webkit-overflow-scrolling:touch}
 
-    h1.head {
-      font-size: 28px;
-      margin: 8px 0;
-      color: var(--ink);
-    }
-    p.note {
-      font-size: 15px;
-      color: var(--muted);
-    }
+    /* doodles / stickers */
+    .doodle-svg{position:absolute;right:18px;top:10px;width:140px;height:140px;pointer-events:none;transform:rotate(-8deg);opacity:0.95}
+    .sticker{position:absolute;left:18px;top:8px;width:96px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);color:#5b4d3a;background:linear-gradient(90deg,#fcefd9,#f4dfbd);transform:rotate(-6deg);box-shadow:0 10px 18px rgba(0,0,0,0.05)}
 
-    .doodles {
-      position: absolute;
-      right: 14px;
-      top: 12px;
-      width: 140px;
-      height: 140px;
-      pointer-events: none;
-      opacity: 0.95;
-      transform: rotate(-6deg);
-    }
-    .corner-tape {
-      position: absolute;
-      left: 14px;
-      top: 6px;
-      width: 84px;
-      height: 34px;
-      background: linear-gradient(90deg,#f3dcbf,#f8ead0);
-      border-radius: 6px;
-      transform: rotate(-6deg);
-      box-shadow: 0 8px 14px rgba(0,0,0,0.05);
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--serif);
-      color: #5b4d3a;
-      font-size: 12px;
-    }
+    /* controls */
+    .controls{display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:12px}
+    .left-controls{display:flex;gap:8px;align-items:center}
+    .btn{background:#fff;border:1px solid rgba(0,0,0,0.06);padding:10px 14px;border-radius:10px;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,0.04);transition:transform .15s}
+    .btn:hover{transform:translateY(-3px)}
+    .btn.ghost{background:transparent;border:none;color:var(--muted)}
 
-    .controls {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .left-controls {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .btn {
-      background: #fff;
-      border: 1px solid rgba(0,0,0,0.06);
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-family: var(--hand);
-      cursor: pointer;
-      box-shadow: 0 6px 18px rgba(11,12,13,0.04);
-      transition: transform 180ms, box-shadow 180ms;
-    }
-    .btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 18px 36px rgba(0,0,0,0.07);
-    }
-    .btn.ghost {
-      background: transparent;
-      border: none;
-      color: var(--muted);
-    }
-    .dots { display: flex; gap: 8px; align-items: center; }
-    .dot {
-      width: 9px; height: 9px;
-      background: #e7e3dd;
-      border-radius: 50%;
-      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.06);
-      transition: transform 200ms, background 200ms;
-    }
-    .dot.active {
-      background: var(--heart);
-      transform: scale(1.15);
-      box-shadow: 0 6px 18px rgba(255,107,138,0.12);
-    }
+    .dots{display:flex;gap:8px;align-items:center}
+    .dot{width:10px;height:10px;border-radius:50%;background:#efe7df;box-shadow:inset 0 -2px 0 rgba(0,0,0,0.06);transition:transform .18s}
+    .dot.active{background:var(--heart);transform:scale(1.15);box-shadow:0 8px 18px rgba(255,107,138,0.12)}
 
-    .final-title {
-      font-size: 36px;
-      color: var(--heart);
-      font-weight: 700;
-      text-shadow: 0 6px 20px rgba(255,107,138,0.06);
-    }
-    .final-sub {
-      font-size: 17px;
-      color: var(--muted);
-      margin-top: 8px;
-    }
+    .page-info{font-family:var(--serif);color:var(--muted);font-size:13px}
 
-    .particles { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
-    .confetti { position: absolute; inset: 0; pointer-events: none; z-index: 9999; }
+    /* final title */
+    .final-title{font-size:34px;color:var(--heart);font-weight:700;text-shadow:0 10px 30px rgba(255,107,138,0.06)}
+    .final-sub{font-size:16px;color:var(--muted);margin-top:8px}
 
-    .writing {
-      white-space: pre-wrap;
-      border-right: 2px solid rgba(0,0,0,0.08);
-      animation: caret 1s steps(1) infinite;
-    }
-    @keyframes caret {
-      0% { border-color: rgba(0,0,0,0.06); }
-      50% { border-color: rgba(0,0,0,0.22); }
-      100% { border-color: rgba(0,0,0,0.06); }
-    }
+    /* particles/hearts */
+    .particles{position:absolute;inset:0;pointer-events:none;z-index:2}
+    .confetti{position:absolute;inset:0;pointer-events:none;z-index:9999}
 
-    @media (max-width: var(--mobile-break)) {
-      .book { padding: 14px; }
-      .paper { padding: 14px; }
-      h1.head { font-size: 22px; }
-      .content { font-size: 16px; }
-      .doodles { width: 110px; height: 110px; right: 8px; top: 8px; }
-    }
+    /* typewriter caret */
+    .writing{white-space:pre-wrap;border-right:2px solid rgba(0,0,0,0.08);animation:caret 1s steps(1) infinite}
+    @keyframes caret{0%{border-color:rgba(0,0,0,0.06)}50%{border-color:rgba(0,0,0,0.22)}100%{border-color:rgba(0,0,0,0.06)}}
 
+    /* responsive tweak */
+    @media(max-width:760px){
+      .book{padding:14px}
+      .paper{padding:14px}
+      .head{font-size:20px}
+      .content{font-size:16px}
+      .doodle-svg{width:98px;height:98px;right:8px;top:8px}
+      .sticker{left:12px;top:6px;width:78px;height:32px}
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="book" role="main" aria-label="Birthday scrapbook for Antratica">
 
+      <!-- header -->
       <div class="header">
-        <div class="tape">A little thing</div>
+        <div class="washi">A little thing</div>
         <div class="title">For <strong>Antratica</strong> — open slowly</div>
       </div>
 
+      <!-- slides -->
       <div class="slides" aria-live="polite">
         <div class="paper" role="region" aria-label="Slide area">
 
-          <div class="corner-tape">PLAYLIST</div>
+          <!-- sticker + doodle -->
+          <div class="sticker">PLAYLIST</div>
 
-          <svg class="doodles" viewBox="0 0 120 120" aria-hidden="true" preserveAspectRatio="xMinYMin">
+          <svg class="doodle-svg" viewBox="0 0 140 140" aria-hidden="true" preserveAspectRatio="xMinYMin">
             <g fill="none" stroke="#e6c9b2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10 22 C40 12, 80 10, 110 24" opacity="0.95"/>
-              <path d="M16 50 C40 44, 70 46, 104 55" opacity="0.85"/>
-              <circle cx="30" cy="86" r="3.2" fill="#ffdcc5" stroke="none"/>
-              <path d="M70 90 C74 86, 86 82, 106 86" stroke="#ffd8c4" opacity="0.6"/>
+              <path d="M8 18 C36 8, 84 6, 132 20" opacity="0.95"/>
+              <path d="M16 42 C44 34, 80 34, 124 46" opacity="0.85"/>
+              <circle cx="28" cy="92" r="3.2" fill="#ffd8c4" stroke="none"/>
+              <path d="M74 98 C78 94, 92 90, 122 96" stroke="#ffd8c4" opacity="0.6"/>
             </g>
-            <g transform="translate(6,8)" fill="#ffd1d9" opacity="0.9">
+            <g transform="translate(8,8)" fill="#ffd1d9" opacity="0.95">
               <path d="M80 10 c0 -6 7 -8 11 -4 4 4 2 10 -3 14 -5 -4 -8 -6 -8 -10z"/>
             </g>
           </svg>
 
-          <!-- Slide 1 -->
+          <!-- SLIDE 1 (user exact text) -->
           <section class="slide" id="s0" aria-hidden="false">
-            <h1 class="head">Hey—</h1>
-            <div class="content" style="text-align:left;">
-              <p id="slide1" class="writing">lol. I hope you don’t feel as weird reading this as I do while creating it. Anyway… I always wanted to try something like this.</p>
+            <h2 class="head">Hey —</h2>
+            <div class="content" style="text-align:left">
+              <!-- EXACT text provided by you (unchanged) -->
+              <p id="slide1" class="writing">lol, I hope you don't feel as weird as i do while creating this. Anyways, i always wanted to try this.</p>
             </div>
             <div style="margin-top:12px"><small class="note">Tap / click anywhere to move forward</small></div>
           </section>
 
-          <!-- Slide 2 -->
+          <!-- SLIDE 2 (rewritten tastefully in your voice) -->
           <section class="slide" id="s1" aria-hidden="true">
-            <h1 class="head">To my… well, whatever you are, <span style="color:#b86f50">Antratica</span></h1>
-            <div class="content"><p id="slide2">There are some people who arrive and quietly rearrange your world. You are one of those — a soft presence, an honest laugh, a home in a thousand miles.</p></div>
+            <h2 class="head">To my… well, whatever you are</h2>
+            <div class="content">
+              <p>I don’t have the words that do you justice, so I’ll keep this small: you quietly rearranged how brightness fits into my days — a steady laugh, a stubborn little wisdom, and a place I go when the world gets noisy. Thank you for being you.</p>
+            </div>
           </section>
 
-          <!-- Slide 3 -->
+          <!-- SLIDE 3 (user exact long text) -->
           <section class="slide" id="s2" aria-hidden="true">
-            <h1 class="head">So—</h1>
+            <h2 class="head">So —</h2>
             <div class="content long" id="slide3" tabindex="0">
+              <!-- EXACT text provided by you (unchanged) -->
               <p>Clearly the previous slide was cringe since it was written by GPT.</p>
               <p>So I’ll have to write something myself —</p>
+
               <p>While creating this, I remembered a little something from last 31st Dec… or 1st Jan, to be precise.</p>
+
               <p>When you sent a “HAPPY NEW YEAR” text on Telegram — and then deleted it, because apparently you believed “why should I get a special treatment?”</p>
+
               <p>Well… I still don’t know what to say about that, because you couldn’t have said anything more stupid over such a trivial matter.</p>
+
               <p>I genuinely wouldn’t have cared whether you wished me or not. But the fact that you deleted it — that was disappointing.</p>
+
               <p>I don’t care if I was/am “special” or not. But I <strong>have</strong> treated you specially in many ways, even in the smallest details — and I’ll never hesitate to admit that.</p>
-              <div style="height:14px"></div>
+
+              <div style="height:12px"></div>
               <p class="note">(Scroll if it looks long on small screens)</p>
             </div>
           </section>
 
-          <!-- Slide 4 -->
+          <!-- SLIDE 4: Memories -->
           <section class="slide" id="s3" aria-hidden="true">
-            <h1 class="head">A few moments</h1>
-            <div class="content" style="text-align:center;">
-              <p id="slide4">Here are some moments I wish I could pack into one room: late-night talks, stubborn wisdom, tiny shared playlists, and the way you make an ordinary day feel like a scene from a movie.</p>
-              <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap">
-                <div style="width:160px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
-                <div style="width:160px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
-                <div style="width:160px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
+            <h2 class="head">A few moments</h2>
+            <div class="content" style="text-align:center">
+              <p>Here are some moments I wish I could pack into one room: late-night talks, stubborn wisdom, tiny shared playlists, and the way you make an ordinary day feel like a scene from a movie.</p>
+              <div style="display:flex;gap:12px;justify-content:center;margin-top:14px;flex-wrap:wrap">
+                <div style="width:150px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
+                <div style="width:150px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
+                <div style="width:150px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
               </div>
             </div>
           </section>
 
-          <!-- Slide 5 -->
+          <!-- SLIDE 5: Build-up -->
           <section class="slide" id="s4" aria-hidden="true">
-            <h1 class="head">Almost there…</h1>
-            <div class="content" style="text-align:center;">
-              <p id="slide5">One last little thing. Close your eyes for a second. Breathe. Think of one tiny memory that always makes you smile — I’ll meet you there.</p>
+            <h2 class="head">Almost there…</h2>
+            <div class="content" style="text-align:center">
+              <p>One last little thing: close your eyes for a second. Breathe. Think of one tiny memory that always makes you smile — I’ll meet you there.</p>
             </div>
           </section>
 
-          <!-- Slide 6 -->
+          <!-- SLIDE 6: Final Reveal -->
           <section class="slide" id="s5" aria-hidden="true">
             <div style="text-align:center">
               <div class="final-title" id="finalTitle">Happy Birthday, Antratica</div>
-              <div class="final-sub" id="finalSub">May your day be gentle, wild and exactly yours.</div>
+              <div class="final-sub" id="finalSub">May your day be gentle, whimsical and exactly yours.</div>
             </div>
           </section>
 
+          <!-- particle layers -->
           <div class="particles" aria-hidden="true"></div>
           <div class="confetti" aria-hidden="true"></div>
 
         </div>
       </div>
 
-      <div class="controls" style="margin-top:6px;">
+      <!-- controls -->
+      <div class="controls">
         <div class="left-controls">
           <button class="btn ghost" id="backBtn" aria-label="Previous slide">← Back</button>
           <button class="btn" id="nextBtn" aria-label="Next slide">Next →</button>
         </div>
+
         <div style="display:flex;align-items:center;gap:12px">
           <div class="dots" aria-hidden>
             <div class="dot active" data-i="0"></div>
@@ -386,7 +250,9 @@
     </div>
   </div>
 
+  <!-- ---------- SCRIPT: slides, particles, typewriter, confetti ---------- -->
   <script>
+    // DOM refs
     const slides = Array.from(document.querySelectorAll('.slide'));
     const dots = Array.from(document.querySelectorAll('.dot'));
     const nextBtn = document.getElementById('nextBtn');
@@ -397,72 +263,149 @@
 
     let idx = 0;
     const total = slides.length;
-    let navLock = false;
+    let navLocked = false;
 
-    function lockNav(ms = 450) {
-      navLock = true;
-      setTimeout(()=> navLock = false, ms);
-    }
+    function lock(ms = 420){ navLocked = true; setTimeout(()=> navLocked = false, ms); }
 
-    function updateState(i) {
-      if(navLock) return;
-      lockNav();
-
-      if(i < 0) i = 0;
-      if(i > total - 1) i = total - 1;
-      idx = i;
+    function updateState(i){
+      if(navLocked) return; lock();
+      if(i < 0) i = 0; if(i >= total) i = total-1; idx = i;
 
       slides.forEach((s,j)=>{
         const active = j === i;
         s.classList.toggle('active', active);
         s.setAttribute('aria-hidden', active ? 'false' : 'true');
-        if(active) {
+        if(active){
           const long = s.querySelector('.long');
           if(long) long.scrollTop = 0;
           setTimeout(()=> { s.setAttribute('tabindex','0'); s.focus({preventScroll:true}); }, 60);
-        } else {
-          s.removeAttribute('tabindex');
-        }
+        } else s.removeAttribute('tabindex');
       });
 
       dots.forEach((d,j)=> d.classList.toggle('active', j===i));
       pageInfo.textContent = `${i+1} / ${total}`;
 
+      // gently fade content for micro polish
       const content = slides[i].querySelector('.content');
-      if(content) {
+      if(content){
         content.style.opacity = 0;
-        content.style.transition = 'opacity 380ms ease';
+        content.style.transition = 'opacity 360ms ease';
         setTimeout(()=> content.style.opacity = 1, 40);
       }
 
       if(slides[i].id === 's5') runFinalReveal();
     }
 
+    // nav events
     nextBtn.addEventListener('click', ()=> updateState(Math.min(total-1, idx+1)));
     backBtn.addEventListener('click', ()=> updateState(Math.max(0, idx-1)));
 
+    // click paper to advance except when clicking long-scroll or buttons
     document.querySelector('.paper').addEventListener('click', (e)=>{
       if(e.target.closest('.btn')) return;
       if(e.target.closest('.long')) return;
       updateState(Math.min(total-1, idx+1));
     });
 
+    // keyboard nav
     document.addEventListener('keydown', (e)=>{
       if(e.key === 'ArrowRight' || e.key === 'Enter') updateState(Math.min(total-1, idx+1));
-      if(e.key === 'ArrowLeft' || e.key === 'Backspace') updateState(Math.max(0, idx-1));
+      if(e.key === 'ArrowLeft' || e.key === 'Backspace' ) updateState(Math.max(0, idx-1));
     });
 
+    // dots navigation
     dots.forEach(d => d.addEventListener('click', ()=> updateState(Number(d.dataset.i)) ));
 
+    // initialize
     updateState(0);
 
-    (function createParticles(){
-      const COUNT = 14;
-      for(let i=0;i<COUNT;i++){
+    /* ---------------- particles (gentle floating sketch dots) ---------------- */
+    (function makeParticles(){
+      const N = 14;
+      for(let i=0;i<N;i++){
         const el = document.createElement('div');
-        el.style.position = 'absolute';
-        el.style.left = (5 + Math.random()*90) + '%';
-        el.style.top = (6 + Math.random()*80) + '%';
+        el.style.position='absolute';
+        el.style.left = (6 + Math.random()*88) + '%';
+        el.style.top  = (6 + Math.random()*80) + '%';
         const size = (4 + Math.random()*8);
         el.style.width = size + 'px';
-s
+        el.style.height = size + 'px';
+        el.style.borderRadius = '50%';
+        el.style.background = 'rgba(184,111,80,' + (0.04 + Math.random()*0.09) + ')';
+        el.style.filter = 'blur(0.9px)';
+        el.style.pointerEvents = 'none';
+        particlesEl.appendChild(el);
+        const dur = 7000 + Math.random()*9000;
+        el.animate([
+          { transform: 'translateY(0px) translateX(0px)' },
+          { transform: `translateY(${6 + Math.random()*22}px) translateX(${(-6 + Math.random()*12)}px)` },
+          { transform: 'translateY(0px) translateX(0px)' }
+        ],{ duration: dur, iterations: Infinity, easing: 'ease-in-out', delay: Math.random()*2000 });
+      }
+    })();
+
+    /* --------- typewriter reveal for slide1 (user exact text preserved) --------- */
+    (function typeFirst(){
+      const el = document.getElementById('slide1');
+      if(!el) return;
+      const full = (el.textContent || el.innerText || '').trim();
+      el.textContent = '';
+      // remove caret during typing to avoid quirky border
+      el.classList.remove('writing');
+      let p = 0;
+      (function step(){
+        p++;
+        el.textContent = full.slice(0,p);
+        if(p < full.length) setTimeout(step, 28 + Math.random()*36);
+        else el.classList.add('writing');
+      })();
+    })();
+
+    /* ---------------- final reveal: confetti + floating hearts ---------------- */
+    function runFinalReveal(){
+      if(confettiEl.dataset.fired) return;
+      confettiEl.dataset.fired = '1';
+
+      // canvas confetti bursts (if library loaded)
+      if(window.confetti){
+        confetti({ particleCount: 28, spread: 120, origin: { y: 0.2 }, colors: ['#ff7b9c','#ffd1c9','#fff4e6'] });
+        setTimeout(()=> confetti({ particleCount: 60, spread: 220, origin:{y:0.12}, colors: ['#ff7b9c','#ffd1c9','#fff4e6'] }), 300);
+        setTimeout(()=> confetti({ particleCount: 100, spread: 260, origin:{y:0.08}, colors: ['#ff7b9c','#ffd1c9','#fff4e6'] }), 900);
+      }
+
+      // floating hearts (SVG)
+      function makeHeart(x){
+        const n = document.createElement('div');
+        n.style.position='absolute';
+        n.style.left = (x || (8 + Math.random()*84)) + '%';
+        n.style.bottom = '-8px';
+        n.style.pointerEvents = 'none';
+        n.style.opacity = '0';
+        n.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 20s-7-4.35-9-6.8C-0.5 9.6 3.4 4 7.5 5.2 9 5.8 10 7.4 12 9.2c2-1.8 3-3.4 4.5-4 4.1-1.2 8 4.4 4.5 8.9-2 2.4-9 6.9-9 6.9z" fill="${Math.random()>0.5? '#ff7b9c':'#ffd1c9'}" opacity="0.95"/></svg>`;
+        confettiEl.appendChild(n);
+        const duration = 2600 + Math.random()*1200;
+        n.animate([
+          { transform:'translateY(0px) scale(0.85)', opacity:0 },
+          { transform:`translateY(-160px) scale(1.05)`, opacity:1 },
+          { transform:'translateY(-320px) scale(0.9)', opacity:0 }
+        ], { duration, easing:'cubic-bezier(.2,.9,.3,1)' });
+        setTimeout(()=> n.remove(), duration + 180);
+      }
+
+      for(let i=0;i<10;i++) setTimeout(()=> makeHeart(), i*120);
+      const rain = setInterval(()=> makeHeart(), 220);
+      setTimeout(()=> clearInterval(rain), 4200);
+    }
+
+    // Prevent accidental select except inside long scroll areas
+    document.addEventListener('selectstart', (e)=>{ if(e.target.closest('.long')) return; e.preventDefault(); });
+
+    // Debug tip
+    console.log('Quick-edit ids: slide1, slide2, slide3, slide4, slide5, finalTitle, finalSub');
+
+    // Ensure first slide visible after load
+    window.addEventListener('load', ()=> updateState(0));
+  </script>
+</body>
+</html>
