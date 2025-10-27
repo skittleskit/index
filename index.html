@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>For Antratica — A Little Surprise</title>
+  <title>For Antratica — </title>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -104,6 +104,61 @@
     .writing{white-space:pre-wrap;border-right:2px solid rgba(0,0,0,0.08);animation:caret 1s steps(1) infinite}
     @keyframes caret{0%{border-color:rgba(0,0,0,0.06)}50%{border-color:rgba(0,0,0,0.22)}100%{border-color:rgba(0,0,0,0.06)}}
 
+    /* --- Sticker aesthetic --- */
+    .sticker-wrap {
+      position: relative;
+      display: inline-block;
+      margin-top: 20px;
+      transform: rotate(-2.5deg);
+      /* float gently */
+      animation: gentleFloat 5s ease-in-out infinite;
+      transition: filter 240ms;
+      will-change: transform;
+    }
+
+    .sticker-img {
+      width: 220px;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05);
+      background: #fffefb;
+      display: block;
+      transform: rotate(1.8deg);
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .tape {
+      position: absolute;
+      width: 60px;
+      height: 18px;
+      background: linear-gradient(90deg, #f7e6d0 0%, #f2dcb4 100%);
+      opacity: 0.88;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .tape-tl { top: -12px; left: -14px; transform: rotate(-10deg); }
+    .tape-tr { top: -12px; right: -14px; transform: rotate(8deg); }
+
+    /* subtle pop when slide becomes active (not cringy) */
+    @keyframes pop {
+      0% { transform: rotate(-2.5deg) scale(0.96); filter: drop-shadow(0 6px 12px rgba(0,0,0,0.06)); }
+      50% { transform: rotate(-0.6deg) scale(1.06); filter: drop-shadow(0 18px 34px rgba(0,0,0,0.12)); }
+      100% { transform: rotate(-2.5deg) scale(1); filter: drop-shadow(0 12px 26px rgba(0,0,0,0.08)); }
+    }
+
+    .sticker-wrap.pop {
+      animation: gentleFloat 5s ease-in-out infinite, pop 760ms cubic-bezier(.2,.9,.3,1);
+    }
+
+    @keyframes gentleFloat {
+      0%, 100% { transform: rotate(-2.5deg) translateY(0); }
+      50% { transform: rotate(-1deg) translateY(-4px); }
+    }
+
+    /* responsive tweak: shrink sticker on small screens */
     @media(max-width:760px){
       .book{padding:14px}
       .paper{padding:14px}
@@ -112,6 +167,11 @@
       .doodle-svg{width:98px;height:98px;right:8px;top:8px}
       .aot .content{font-size:15px}
       .aot .emblem{width:40px;height:40px}
+
+      .sticker-img { width: 160px; }
+      .tape { width: 44px; height: 14px; }
+      .tape-tl { top: -10px; left: -10px; }
+      .tape-tr { top: -10px; right: -10px; }
     }
   </style>
 </head>
@@ -188,15 +248,18 @@ lol, i am having a really hard time being nice with you...</p>
             </div>
           </section>
 
-          <!-- SLIDE 4 (photos) -->
+          <!-- SLIDE 4 (photos) - single sticker added here -->
           <section class="slide" id="s3" aria-hidden="true">
-            <h2 class="head">A few moments</h2>
+            <h2 class="head">Let's copy your idea</h2>
             <div class="content" style="text-align:center">
-              <p>Here are some moments...</p>
+              <p>How can i not have a slide for this og sticker...</p>
               <div style="display:flex;gap:12px;justify-content:center;margin-top:14px;flex-wrap:wrap">
-                <div style="width:150px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
-                <div style="width:150px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
-                <div style="width:150px;height:110px;border-radius:10px;background:#fffefb;border:1px dashed #f0e6db;display:flex;align-items:center;justify-content:center;color:var(--muted)">Photo</div>
+                <!-- Single sticker as requested -->
+                <div class="sticker-wrap" aria-hidden="false" role="img" title="sticker">
+                  <img src="sticker.webp" alt="sticker" class="sticker-img" />
+                  <div class="tape tape-tl" aria-hidden="true"></div>
+                  <div class="tape tape-tr" aria-hidden="true"></div>
+                </div>
               </div>
             </div>
           </section>
@@ -284,6 +347,24 @@ lol, i am having a really hard time being nice with you...</p>
 
       dots.forEach((d,j)=> d.classList.toggle('active', j===i) );
       pageInfo.textContent = `${i+1} / ${total}`;
+
+      // sticker pop effect when photos slide is active
+      try {
+        const sticker = document.querySelector('.sticker-wrap');
+        const photosSlide = document.getElementById('s3');
+        if(sticker){
+          if(photosSlide && photosSlide.classList.contains('active')){
+            // reflow & trigger pop animation
+            sticker.classList.remove('pop');
+            // small timeout to ensure reflow so animation retriggers
+            setTimeout(()=> sticker.classList.add('pop'), 20);
+            // remove pop class after animation to keep things tidy
+            setTimeout(()=> sticker.classList.remove('pop'), 1000);
+          } else {
+            sticker.classList.remove('pop');
+          }
+        }
+      } catch(e){ /* no-op */ }
 
       // if this is final slide (marked with data-final)
       if( slides[i].dataset.final === "true" ) runFinalReveal();
