@@ -25,6 +25,9 @@
       --serif: "Libre Baskerville", Georgia, serif;
       --slide-h: 70vh;
       --gutter: 18px;
+      /* doodle tint (adjustable) */
+      --doodle-color: rgba(184,111,80,0.30);
+      --doodle-fill: rgba(184,111,80,0.14);
     }
 
     *{box-sizing:border-box}
@@ -158,6 +161,13 @@
       50% { transform: rotate(-1deg) translateY(-4px); }
     }
 
+    /* focus-visible for keyboard users (accessibility) */
+    .btn:focus, .dot:focus, .sticker-wrap:focus {
+      outline: 3px solid rgba(184,111,80,0.14);
+      outline-offset: 6px;
+      border-radius: 8px;
+    }
+
     /* responsive tweak: shrink sticker on small screens */
     @media(max-width:760px){
       .book{padding:14px}
@@ -173,18 +183,89 @@
       .tape-tl { top: -10px; left: -10px; }
       .tape-tr { top: -10px; right: -10px; }
     }
+
+    /* respect user reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .sticker-wrap, .sticker-wrap.pop { animation: none !important; transform: none !important; }
+      .slide.active { animation: none !important; }
+      .writing { animation: none !important; border-right: 1px solid rgba(0,0,0,0.06); }
+      .mini-doodle, .mini-doodle-2 { transition: none !important; transform: none !important; }
+    }
+
+    /* --- Doodles: default + active behaviour --- */
+    .mini-doodle, .mini-doodle-2 {
+      position:absolute;
+      width:92px;
+      height:92px;
+      opacity:0.14;
+      pointer-events:none;
+      transition:opacity 280ms ease, filter 360ms cubic-bezier(.2,.9,.3,1), transform 360ms cubic-bezier(.2,.9,.3,1);
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.03));
+    }
+
+    /* stronger when the slide is active */
+    .slide.active .mini-doodle,
+    .slide.active .mini-doodle-2 {
+      opacity:0.36;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,0.06));
+      transform: translateY(-4px);
+    }
+
+    /* per-slide placement — keep original subtle rotations */
+    .d-s0 { right:18px; bottom:14px; transform:rotate(-6deg) scale(0.98); }
+    .d-s0-2 { right:88px; bottom:30px; transform:rotate(-12deg) scale(0.78); }
+
+    .d-s1 { left:14px; top:26px; transform:rotate(4deg) scale(0.92); }
+    .d-s1-2 { left:64px; top:14px; transform:rotate(-6deg) scale(0.76); }
+
+    .d-s2 { left:10px; bottom:20px; transform:rotate(-4deg) scale(1); }
+    .d-s2-2 { left:18px; bottom:86px; transform:rotate(2deg) scale(0.86); }
+
+    .d-s2b { right:22px; top:64px; transform:rotate(8deg) scale(0.9); }
+    .d-s2b-2 { right:64px; top:84px; transform:rotate(-4deg) scale(0.78); }
+
+    .d-s2a { left:18px; bottom:18px; transform:rotate(-2deg) scale(0.98); }
+    .d-s2a-2 { left:56px; bottom:22px; transform:rotate(6deg) scale(0.78); }
+
+    .d-s3 { right:12px; top:18px; transform:rotate(-10deg) scale(1.02); }
+    .d-s3-2 { right:72px; top:48px; transform:rotate(4deg) scale(0.88); }
+
+    .d-s4 { left:18px; top:18px; transform:rotate(2deg) scale(0.94); }
+    .d-s4-2 { left:56px; top:44px; transform:rotate(-8deg) scale(0.8); }
+
+    .d-s5 { right:22px; bottom:22px; transform:rotate(-8deg) scale(1); }
+    .d-s5-2 { right:62px; bottom:68px; transform:rotate(6deg) scale(0.78); }
+
+    /* doodle stroke + fill defaults (keeps them sketchy) */
+    .mini-doodle path, .mini-doodle circle, .mini-doodle rect, .mini-doodle line,
+    .mini-doodle-2 path, .mini-doodle-2 circle, .mini-doodle-2 rect, .mini-doodle-2 line {
+      stroke: var(--doodle-color);
+      fill: none;
+      stroke-width:1.6;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+    .mini-doodle .fill, .mini-doodle-2 .fill { fill: var(--doodle-fill); opacity:1; stroke:none; }
+
+    /* a small stamp/ribbon accent for final slide */
+    .final-ribbon {
+      display:inline-block;
+      margin-top:10px;
+      background: linear-gradient(180deg,#fff1f6,#ffeef0);
+      border-radius:8px;
+      padding:6px 10px;
+      box-shadow: 0 8px 18px rgba(255,107,138,0.06);
+      font-family:var(--serif);
+      color:#a33b57;
+      font-weight:700;
+      font-size:13px;
+    }
   </style>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-NNB93CN8QR"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-NNB93CN8QR');
-</script>
+
 </head>
 <body>
   <div class="wrap">
-    <div class="book">
+    <div class="book" role="main" aria-label="Birthday scrapbook for Antratica">
 
       <div class="header">
         <div class="washi">A little thing</div>
@@ -194,34 +275,66 @@
       <div class="slides">
         <div class="paper">
 
-          <!-- small sketchy doodle -->
+          <!-- background sketch (unchanged) -->
           <svg class="doodle-svg" viewBox="0 0 140 140" aria-hidden="true" preserveAspectRatio="xMinYMin">
             <g fill="none" stroke="#e6c9b2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <path d="M8 18 C36 8, 84 6, 132 20" opacity="0.95"/>
               <path d="M16 42 C44 34, 80 34, 124 46" opacity="0.85"/>
               <circle cx="28" cy="92" r="3.2" fill="#ffd8c4" stroke="none"/>
-              <path d="M74 98 C78 94, 92 90, 122 96" stroke="#ffd8c4" opacity="0.6"/>
+              <path d="M74 98 C78 94, 92 90, 122 96" stroke="#ffd8c4" opacity="0.6"></path>
             </g>
           </svg>
 
-          <!-- SLIDE 1 -->
+          <!-- SLIDE 1: opener -->
           <section class="slide" id="s0">
             <h2 class="head">Hey —</h2>
             <div class="content" style="text-align:left">
               <p id="slide1" class="writing">lol, I hope you don't feel as weird as i do while creating this. Anyways, i always wanted to try this.</p>
             </div>
             <div style="margin-top:12px"><small class="note">Tap / click anywhere to move forward</small></div>
+
+            <!-- doodle: constellation (existing) -->
+            <svg class="mini-doodle d-s0" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="stars doodle">
+              <g>
+                <circle class="fill" cx="10" cy="12" r="2.6"></circle>
+                <circle class="fill" cx="24" cy="6" r="1.8"></circle>
+                <circle class="fill" cx="36" cy="14" r="2.2"></circle>
+                <path d="M10 12 L24 6 L36 14" style="stroke:var(--doodle-color);stroke-width:1.6"></path>
+              </g>
+            </svg>
+
+            <!-- new doodle: tiny speech bubble + moon to echo "hey" tone -->
+            <svg class="mini-doodle-2 d-s0-2" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="speech moon">
+              <g>
+                <path d="M14 22c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8c-1.7 0-3.3-.5-4.6-1.4L14 34l1.4-4.6C14.5 26.3 14 24.7 14 22z" style="stroke:var(--doodle-color);fill:none"></path>
+                <circle class="fill" cx="34" cy="12" r="2.2"></circle>
+              </g>
+            </svg>
           </section>
 
-          <!-- SLIDE 2 -->
+          <!-- SLIDE 2: "To my... whatever you are" -->
           <section class="slide" id="s1" aria-hidden="true">
             <h2 class="head">To my… well, whatever you are</h2>
             <div class="content">
               <p>I don’t know why this feels so intimate lol when the bond we have is evidently mutually platonic. Maybe it's because i have never gone out of my way to do anything special for someone...</p>
             </div>
+
+            <!-- scribbly heart -->
+            <svg class="mini-doodle d-s1" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="heart doodle">
+              <path d="M12 20 C10 14, 18 10, 24 14 C30 10, 38 14, 36 20 C34 28, 24 34, 24 34 C24 34,14 28,12 20 Z" style="stroke:var(--doodle-color);fill:none"></path>
+            </svg>
+
+            <!-- new doodle: tiny envelope & handwritten underline to suggest 'a note' -->
+            <svg class="mini-doodle-2 d-s1-2" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="envelope doodle">
+              <g>
+                <rect x="6" y="12" width="36" height="24" rx="3" style="stroke:var(--doodle-color);fill:none"></rect>
+                <path d="M8 14 L24 26 L40 14" style="stroke:var(--doodle-color)"></path>
+                <path d="M10 38 L38 38" style="stroke:var(--doodle-color);stroke-width:1.4"></path>
+              </g>
+            </svg>
           </section>
 
-          <!-- SLIDE 3 -->
+          <!-- SLIDE 3: long reflection (So —) -->
           <section class="slide" id="s2" aria-hidden="true">
             <h2 class="head">So —</h2>
             <div class="content long" id="slide3" tabindex="0">
@@ -229,19 +342,51 @@
  We have had our disagreements, There have been times when i have behaved strangely with you, But know that none of that has ever made me harbor any ill feelings towards you. I have and i will, always hope good for you. 
 lol, i am having a really hard time being nice with you...</p>
             </div>
+
+            <!-- bookmark doodle -->
+            <svg class="mini-doodle d-s2" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="bookmark doodle">
+              <path d="M8 6 C20 18, 36 18, 40 30" style="stroke:var(--doodle-color);fill:none"></path>
+              <rect class="fill" x="6" y="32" width="12" height="6" rx="2"></rect>
+            </svg>
+
+            <!-- new doodle: tiny checklist/timeline to hint 'a lot to say' -->
+            <svg class="mini-doodle-2 d-s2-2" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="timeline doodle">
+              <g>
+                <line x1="14" y1="12" x2="36" y2="12" style="stroke:var(--doodle-color)"></line>
+                <circle class="fill" cx="12" cy="12" r="2.2"></circle>
+                <circle class="fill" cx="24" cy="12" r="1.6"></circle>
+                <line x1="14" y1="20" x2="36" y2="20" style="stroke:var(--doodle-color)"></line>
+                <circle class="fill" cx="12" cy="20" r="2.2"></circle>
+              </g>
+            </svg>
           </section>
 
-          <!-- SLIDE: Well — -->
+          <!-- SLIDE "Well —" (nostalgia) -->
           <section class="slide" id="s2b" aria-hidden="true">
             <h2 class="head">Well —</h2>
             <div class="content">
               <p>I don't usually think about it, but now looking back at those late night VCs gives a faint bittersweet feeling of nostalgia that i will always look back as times when the life was peaceful.</p>
             </div>
+
+            <!-- camera icon -->
+            <svg class="mini-doodle d-s2b" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="camera doodle">
+              <rect x="6" y="12" width="36" height="24" rx="4" style="stroke:var(--doodle-color);fill:none"></rect>
+              <circle class="fill" cx="24" cy="24" r="5"></circle>
+              <rect x="10" y="8" width="8" height="4" rx="1" style="stroke:var(--doodle-color);fill:none"></rect>
+            </svg>
+
+            <!-- new doodle: tiny film roll / polaroid stack -->
+            <svg class="mini-doodle-2 d-s2b-2" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="film doodle">
+              <g>
+                <rect x="8" y="14" width="28" height="20" rx="3" style="stroke:var(--doodle-color);fill:none"></rect>
+                <rect class="fill" x="10" y="16" width="6" height="6" rx="1"></rect>
+                <rect class="fill" x="26" y="16" width="6" height="6" rx="1"></rect>
+              </g>
+            </svg>
           </section>
 
           <!-- AOT slide: important side note -->
           <section class="slide aot" id="s2a" aria-hidden="true">
-            <!-- small emblem inspired sketch (fits sketchbook theme) -->
             <svg class="emblem" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <g fill="none" stroke="#1b1b1b" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M28 6 L32 18 L44 20 L34 28 L36 40 L28 34 L20 40 L22 28 L12 20 L24 18 Z" fill="#f4e6e6" opacity="0.9"/>
@@ -253,30 +398,72 @@ lol, i am having a really hard time being nice with you...</p>
               <p style="margin:8px 0;">Attack on titan is the greatest piece of fiction ever created!</p>
               <p style="margin:10px 0 0;color:var(--muted);font-size:13px;">Attack on Mid*</p>
             </div>
+
+            <!-- laurel badge -->
+            <svg class="mini-doodle d-s2a" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="badge doodle">
+              <path d="M24 8 C30 10,36 16,36 24 C36 32,30 36,24 40 C18 36,12 32,12 24 C12 16,18 10,24 8 Z" style="stroke:var(--doodle-color);fill:none"></path>
+              <circle class="fill" cx="24" cy="24" r="3"></circle>
+            </svg>
+
+            <!-- new doodle: small starburst / comic sparkle for "important" -->
+            <svg class="mini-doodle-2 d-s2a-2" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="spark doodle">
+              <g>
+                <path d="M24 6 L26 16 L36 18 L26 22 L24 32 L22 22 L12 18 L22 16 Z" style="stroke:var(--doodle-color);fill:none"></path>
+              </g>
+            </svg>
           </section>
 
-          <!-- SLIDE 4 (photos) - single sticker added here -->
+          <!-- SLIDE 4 (photos) - single sticker remains -->
           <section class="slide" id="s3" aria-hidden="true">
             <h2 class="head">Let's copy your idea</h2>
             <div class="content" style="text-align:center">
               <p>How can i not have a slide for this og sticker...</p>
               <div style="display:flex;gap:12px;justify-content:center;margin-top:14px;flex-wrap:wrap">
-                <!-- Single sticker as requested -->
-                <div class="sticker-wrap" aria-hidden="false" role="img" title="sticker">
-                  <img src="sticker.webp" alt="sticker" class="sticker-img" />
+                <div class="sticker-wrap" aria-hidden="false" role="img" title="sticker" tabindex="0">
+                  <img src="sticker.webp" alt="sticker" class="sticker-img" loading="lazy" />
                   <div class="tape tape-tl" aria-hidden="true"></div>
                   <div class="tape tape-tr" aria-hidden="true"></div>
                 </div>
               </div>
             </div>
+
+            <!-- polaroid doodle -->
+            <svg class="mini-doodle d-s3" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="polaroid doodle">
+              <rect x="6" y="8" width="36" height="28" rx="3" style="stroke:var(--doodle-color);fill:none"></rect>
+              <path d="M12 18 L20 26 L34 12" style="stroke:var(--doodle-color);fill:none"></path>
+            </svg>
+
+            <!-- new doodle: paperclip + tiny shadow to make the sticker feel 'taped & clipped' -->
+            <svg class="mini-doodle-2 d-s3-2" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="paperclip doodle">
+              <g>
+                <path d="M18 12 C22 8, 30 8, 34 12 C38 16,38 24,34 28 L22 40 C18 44,12 44,8 40" style="stroke:var(--doodle-color);fill:none"></path>
+                <rect class="fill" x="30" y="6" width="8" height="4" rx="1"></rect>
+              </g>
+            </svg>
           </section>
 
-          <!-- SLIDE 5 -->
+          <!-- SLIDE 5: Almost there -->
           <section class="slide" id="s4" aria-hidden="true">
             <h2 class="head">Almost there…</h2>
             <div class="content" style="text-align:center">
               <p>One last little thing...</p>
             </div>
+
+            <!-- spark/firerork -->
+            <svg class="mini-doodle d-s4" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="spark doodle">
+              <line x1="24" y1="8" x2="24" y2="18" style="stroke:var(--doodle-color)"></line>
+              <line x1="16" y1="12" x2="22" y2="18" style="stroke:var(--doodle-color)"></line>
+              <circle class="fill" cx="24" cy="20" r="2.4"></circle>
+            </svg>
+
+            <!-- new doodle: tiny candle to hint 'almost final' -->
+            <svg class="mini-doodle-2 d-s4-2" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="candle doodle">
+              <g>
+                <rect x="22" y="18" width="4" height="14" rx="1" style="stroke:var(--doodle-color);fill:none"></rect>
+                <path d="M24 14 C23 12,25 12,24 10" style="stroke:var(--doodle-color);fill:none"></path>
+                <circle class="fill" cx="24" cy="12" r="1.8"></circle>
+              </g>
+            </svg>
           </section>
 
           <!-- FINAL SLIDE -->
@@ -284,19 +471,38 @@ lol, i am having a really hard time being nice with you...</p>
             <div style="text-align:center">
               <div class="final-title" id="finalTitle">Happy Birthday, Mansi</div>
               <div class="final-sub" id="finalSub">May whatever you manifest 24/7 comes true.</div>
+              <div style="margin-top:12px">
+                <span class="final-ribbon"> 📎 </span>
+              </div>
             </div>
+
+            <!-- confetti shard doodle -->
+            <svg class="mini-doodle d-s5" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="confetti doodle">
+              <rect class="fill" x="10" y="10" width="4" height="8" rx="1"></rect>
+              <rect class="fill" x="34" y="18" width="3" height="6" rx="1"></rect>
+              <path d="M20 28 L28 20" style="stroke:var(--doodle-color);fill:none"></path>
+            </svg>
+
+            <!-- new doodle: round 'stamp' -->
+            <svg class="mini-doodle-2 d-s5-2" viewBox="0 0 48 48" aria-hidden="true" role="img" aria-label="stamp doodle">
+              <g>
+                <circle cx="24" cy="24" r="10" style="stroke:var(--doodle-color);fill:none"></circle>
+                <circle class="fill" cx="24" cy="24" r="2"></circle>
+                <path d="M16 28 L32 20" style="stroke:var(--doodle-color);stroke-width:1.4"></path>
+              </g>
+            </svg>
           </section>
 
-          <div class="particles"></div>
-          <div class="confetti"></div>
+          <div class="particles" aria-hidden="true"></div>
+          <div class="confetti" aria-hidden="true"></div>
 
         </div>
       </div>
 
       <div class="controls">
         <div class="left-controls">
-          <button class="btn ghost" id="backBtn">← Back</button>
-          <button class="btn" id="nextBtn">Next →</button>
+          <button class="btn ghost" id="backBtn" aria-label="Previous slide">← Back</button>
+          <button class="btn" id="nextBtn" aria-label="Next slide">Next →</button>
         </div>
 
         <div style="display:flex;align-items:center;gap:12px">
@@ -317,19 +523,30 @@ lol, i am having a really hard time being nice with you...</p>
     const particlesEl = document.querySelector('.particles');
     const confettiEl = document.querySelector('.confetti');
 
+    const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     let idx = 0;
     const total = slides.length;
     pageInfo.textContent = `1 / ${total}`;
     let navLocked = false;
     function lock(ms=420){ navLocked=true; setTimeout(()=>navLocked=false,ms); }
 
-    // generate dots dynamically (so count always matches slides)
+    // generate dots dynamically (keyboard accessible)
     const dots = [];
     for(let i=0;i<total;i++){
       const d = document.createElement('div');
       d.className = 'dot';
       d.dataset.i = i;
+      d.setAttribute('tabindex','0');
+      d.setAttribute('role','button');
+      d.setAttribute('aria-label', `Go to slide ${i+1}`);
       d.addEventListener('click', ()=> updateState(i));
+      d.addEventListener('keydown', (ev)=>{
+        if(ev.key === 'Enter' || ev.key === ' '){
+          ev.preventDefault();
+          updateState(i);
+        }
+      });
       dotsContainer.appendChild(d);
       dots.push(d);
     }
@@ -343,7 +560,6 @@ lol, i am having a really hard time being nice with you...</p>
         s.classList.toggle('active', active);
         s.setAttribute('aria-hidden', !active);
         if(active){
-          // focus any long scroll to allow keyboard scrolling
           const long = s.querySelector('.long');
           if(long) long.scrollTop = 0;
           setTimeout(()=> { s.setAttribute('tabindex','0'); s.focus({preventScroll:true}); }, 40);
@@ -355,17 +571,14 @@ lol, i am having a really hard time being nice with you...</p>
       dots.forEach((d,j)=> d.classList.toggle('active', j===i) );
       pageInfo.textContent = `${i+1} / ${total}`;
 
-      // sticker pop effect when photos slide is active
+      // sticker pop on photos slide
       try {
         const sticker = document.querySelector('.sticker-wrap');
         const photosSlide = document.getElementById('s3');
         if(sticker){
-          if(photosSlide && photosSlide.classList.contains('active')){
-            // reflow & trigger pop animation
+          if(photosSlide && photosSlide.classList.contains('active') && !reducedMotion){
             sticker.classList.remove('pop');
-            // small timeout to ensure reflow so animation retriggers
             setTimeout(()=> sticker.classList.add('pop'), 20);
-            // remove pop class after animation to keep things tidy
             setTimeout(()=> sticker.classList.remove('pop'), 1000);
           } else {
             sticker.classList.remove('pop');
@@ -373,24 +586,30 @@ lol, i am having a really hard time being nice with you...</p>
         }
       } catch(e){ /* no-op */ }
 
-      // if this is final slide (marked with data-final)
+      // final confetti
       if( slides[i].dataset.final === "true" ) runFinalReveal();
     }
 
     nextBtn.addEventListener('click', ()=> updateState(idx+1));
     backBtn.addEventListener('click', ()=> updateState(idx-1));
 
-    // click paper to advance — but ignore clicks inside .long (so scroll works)
     document.querySelector('.paper').addEventListener('click', (e)=>{
       if(e.target.closest('.btn')) return;
-      if(e.target.closest('.long')) return; // allow scrolling/clicks inside long area
+      if(e.target.closest('.long')) return;
       updateState(idx+1);
     });
 
-    // keyboard navigation
     document.addEventListener('keydown', e=>{
+      const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+      const editable = e.target && (e.target.isContentEditable || tag === 'input' || tag === 'textarea' || e.target.closest && e.target.closest('.long'));
+      if(editable && (e.key === ' ')) return;
       if(e.key === 'ArrowRight' || e.key === 'Enter') updateState(idx+1);
       if(e.key === 'ArrowLeft' || e.key === 'Backspace') updateState(idx-1);
+      if(e.key === ' '){
+        if(tag === 'button' || tag === 'a' || e.target.isContentEditable) return;
+        e.preventDefault();
+        updateState(idx+1);
+      }
     });
 
     // init
@@ -411,8 +630,9 @@ lol, i am having a really hard time being nice with you...</p>
       })();
     })();
 
-    /* small floating particles for ambiance */
+    /* particles (disabled when reduced motion is requested) */
     (function makeParticles(){
+      if(reducedMotion) return;
       const N = 12;
       for(let i=0;i<N;i++){
         const el = document.createElement('div');
@@ -436,47 +656,49 @@ lol, i am having a really hard time being nice with you...</p>
       }
     })();
 
-    /* final reveal: stronger confetti + floating hearts (uses canvas-confetti if available) */
     function runFinalReveal(){
       if(confettiEl.dataset.fired) return;
       confettiEl.dataset.fired = '1';
-
-      // canvas confetti bursts (two-stage + sprinkle)
       if(window.confetti){
-        confetti({ particleCount: 40, spread: 130, origin: { y: 0.2 }, colors:['#ff7b9c','#ffd1c9','#fff4e6'] });
-        setTimeout(()=> confetti({ particleCount: 80, spread: 230, origin: { y: 0.12 }, colors:['#ff7b9c','#ffd1c9','#fff4e6'] }), 260);
-        setTimeout(()=> confetti({ particleCount: 120, spread: 280, origin: { y: 0.08 }, colors:['#ff7b9c','#ffd1c9','#fff4e6'] }), 700);
+        if(reducedMotion){
+          confetti({ particleCount: 20, spread: 100, origin: { y: 0.2 }, colors:['#ff7b9c','#ffd1c9'] });
+          setTimeout(()=> confetti({ particleCount: 36, spread: 160, origin: { y: 0.12 }, colors:['#ff7b9c','#ffd1c9'] }), 260);
+        } else {
+          confetti({ particleCount: 40, spread: 130, origin: { y: 0.2 }, colors:['#ff7b9c','#ffd1c9','#fff4e6'] });
+          setTimeout(()=> confetti({ particleCount: 80, spread: 230, origin: { y: 0.12 }, colors:['#ff7b9c','#ffd1c9','#fff4e6'] }), 260);
+          setTimeout(()=> confetti({ particleCount: 120, spread: 280, origin: { y: 0.08 }, colors:['#ff7b9c','#ffd1c9','#fff4e6'] }), 700);
+        }
       }
 
-      // floating hearts to complement confetti (small SVGs)
-      function makeHeart(x){
-        const n = document.createElement('div');
-        n.style.position='absolute';
-        n.style.left = (x || (8 + Math.random()*84)) + '%';
-        n.style.bottom = '-8px';
-        n.style.pointerEvents = 'none';
-        n.style.opacity = '0';
-        n.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 20s-7-4.35-9-6.8C-0.5 9.6 3.4 4 7.5 5.2 9 5.8 10 7.4 12 9.2c2-1.8 3-3.4 4.5-4 4.1-1.2 8 4.4 4.5 8.9-2 2.4-9 6.9-9 6.9z" fill="${Math.random()>0.5? '#ff7b9c':'#ffd1c9'}" opacity="0.95"/></svg>`;
-        confettiEl.appendChild(n);
-        const duration = 2600 + Math.random()*1200;
-        n.animate([
-          { transform:'translateY(0px) scale(0.85)', opacity:0 },
-          { transform:`translateY(-160px) scale(1.05)`, opacity:1 },
-          { transform:'translateY(-320px) scale(0.9)', opacity:0 }
-        ], { duration, easing:'cubic-bezier(.2,.9,.3,1)' });
-        setTimeout(()=> n.remove(), duration + 180);
-      }
+      if(!reducedMotion){
+        function makeHeart(x){
+          const n = document.createElement('div');
+          n.style.position='absolute';
+          n.style.left = (x || (8 + Math.random()*84)) + '%';
+          n.style.bottom = '-8px';
+          n.style.pointerEvents = 'none';
+          n.style.opacity = '0';
+          n.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 20s-7-4.35-9-6.8C-0.5 9.6 3.4 4 7.5 5.2 9 5.8 10 7.4 12 9.2c2-1.8 3-3.4 4.5-4 4.1-1.2 8 4.4 4.5 8.9-2 2.4-9 6.9-9 6.9z" fill="${Math.random()>0.5? '#ff7b9c':'#ffd1c9'}" opacity="0.95"/></svg>`;
+          confettiEl.appendChild(n);
+          const duration = 2600 + Math.random()*1200;
+          n.animate([
+            { transform:'translateY(0px) scale(0.85)', opacity:0 },
+            { transform:`translateY(-160px) scale(1.05)`, opacity:1 },
+            { transform:'translateY(-320px) scale(0.9)', opacity:0 }
+          ], { duration, easing:'cubic-bezier(.2,.9,.3,1)' });
+          setTimeout(()=> n.remove(), duration + 180);
+        }
 
-      for(let i=0;i<12;i++) setTimeout(()=> makeHeart(), i*110);
-      const rain = setInterval(()=> makeHeart(), 180);
-      setTimeout(()=> clearInterval(rain), 4600);
+        for(let i=0;i<12;i++) setTimeout(()=> makeHeart(), i*110);
+        const rain = setInterval(()=> makeHeart(), 180);
+        setTimeout(()=> clearInterval(rain), 4600);
+      }
     }
 
     // prevent accidental select on most of the page (allow selection inside .long)
     document.addEventListener('selectstart', (e)=>{ if(e.target.closest('.long')) return; e.preventDefault(); });
 
-    // helpful console tip
     console.log('Edit text nodes by id: slide1, slide3, finalTitle, finalSub (or directly in HTML).');
   </script>
 </body>
