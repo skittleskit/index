@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>For Mansi</title>
+  <meta
+    name="description"
+    content="An interactive birthday scrapbook with notes, little memories, and a final wish."
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+  <script
+    src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"
+    defer
+  ></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="page-shell">
+    <aside class="rail" aria-label="Site progress">
+      <div class="rail__top">
+        <p class="eyebrow">birthday tape</p>
+        <h1 class="rail__title">For Mansi</h1>
+        <p class="rail__text">
+          A neater version of the little thing that kept growing.
+        </p>
+      </div>
+
+      <div class="progress-card">
+        <p class="progress-card__label">Chapter</p>
+        <div class="progress-card__value" id="progressLabel">Opening note</div>
+        <div class="progress-card__meta" id="progressMeta">1 / 9</div>
+      </div>
+
+      <nav class="chapter-nav" id="chapterNav" aria-label="Slides"></nav>
+
+      <div class="rail__bottom">
+        <button class="soft-button" id="toggleThemeBtn" type="button">
+          Switch atmosphere
+        </button>
+        <button class="ghost-button" id="toggleDoodlesBtn" type="button">
+          Toggle doodles
+        </button>
+      </div>
+    </aside>
+
+    <main class="storyboard" aria-label="Birthday scrapbook">
+      <header class="hero-card">
+        <div>
+          <p class="eyebrow">digital scrapbook</p>
+          <h2 class="hero-card__title">
+            The same birthday page, now with more heart and less chaos.
+          </h2>
+        </div>
+        <div class="hero-card__controls">
+          <button class="ghost-button" id="backBtn" type="button">Previous</button>
+          <button class="soft-button" id="nextBtn" type="button">Next chapter</button>
+        </div>
+      </header>
+
+      <section class="slide-deck">
+        <article class="scene is-active" data-scene="opening" data-title="Opening note">
+          <div class="scene__paper">
+            <div class="scene__badge">01</div>
+            <p class="eyebrow">opening note</p>
+            <h3 class="scene__title">Hey, this still feels a little embarrassing.</h3>
+            <p class="scene__lede type-target" id="typeTarget">
+              I still do not know how to act normal while making something like this, but
+              that is probably why it matters. If I was going to do this at all, it had to
+              feel personal, slightly awkward, and very real.
+            </p>
+            <div class="scene__footer">
+              <span>Click the paper, use the arrows, or jump from the chapter rail.</span>
+              <button class="chip-button" id="openOverviewBtn" type="button">
+                Why this version?
+              </button>
+            </div>
+            <div class="doodle doodle--stars" aria-hidden="true"></div>
+          </div>
+        </article>
+
+        <article class="scene" data-scene="bond" data-title="What this is">
+          <div class="scene__paper split-layout">
+            <div>
+              <div class="scene__badge">02</div>
+              <p class="eyebrow">what this is</p>
+              <h3 class="scene__title">To my... whatever-you-are in the best way.</h3>
+              <p class="scene__body">
+                Some people fit neatly into a label. Some do not. Ours never really felt
+                like it needed one. It just became its own odd little category: honest,
+                annoying, funny, surprisingly consistent, and somehow important.
+              </p>
+              <p class="scene__body">
+                This page is not trying to be dramatic. It is just me admitting that your
+                place in my life became bigger than I expected.
+              </p>
+            </div>
+
+            <div class="pill-board" aria-label="Things that fit your presence">
+              <button class="pill is-selected" type="button">annoyingly memorable</button>
+              <button class="pill" type="button">late-night energy</button>
+              <button class="pill" type="button">comfort hidden as banter</button>
+              <button class="pill" type="button">unexpectedly grounding</button>
+              <button class="pill" type="button">mutual nonsense</button>
+              <button class="pill" type="button">oddly peaceful</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="scene" data-scene="timeline" data-title="Small archive">
+          <div class="scene__paper">
+            <div class="scene__badge">03</div>
+            <p class="eyebrow">small archive</p>
+            <h3 class="scene__title">Tiny moments add up faster than people notice.</h3>
+            <div class="timeline">
+              <button class="memory-card is-active" type="button" data-memory="0">
+                <span class="memory-card__year">Then</span>
+                <span class="memory-card__title">Late night calls</span>
+              </button>
+              <button class="memory-card" type="button" data-memory="1">
+                <span class="memory-card__year">Later</span>
+                <span class="memory-card__title">The strange disagreements</span>
+              </button>
+              <button class="memory-card" type="button" data-memory="2">
+                <span class="memory-card__year">Still</span>
+                <span class="memory-card__title">The quiet consistency</span>
+              </button>
+            </div>
+            <div class="memory-panel" id="memoryPanel">
+              Looking back, those calls have a soft kind of nostalgia now. Not loud, not
+              cinematic, just the kind that makes life feel temporarily calm again.
+            </div>
+          </div>
+        </article>
+
+        <article class="scene" data-scene="letter" data-title="Letter fold">
+          <div class="scene__paper">
+            <div class="scene__badge">04</div>
+            <p class="eyebrow">letter fold</p>
+            <h3 class="scene__title">A more honest version, if we stop pretending for a second.</h3>
+            <div class="letter-stack">
+              <button class="letter-toggle" id="letterToggleBtn" type="button" aria-expanded="false">
+                Open the folded note
+              </button>
+              <div class="letter-sheet" id="letterSheet" hidden>
+                <p>
+                  We have had our weird patches. There were moments where I handled things
+                  badly or just acted strange. Even then, none of it really turned into bad
+                  wishes on my side.
+                </p>
+                <p>
+                  If anything, this page exists because the good always outlasted the awkward.
+                  I have wanted life to be kind to you more often than I ever bothered saying.
+                </p>
+                <p>
+                  You can read that as sentimental if you want. I will deny it later.
+                </p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="scene" data-scene="side-note" data-title="Side quest">
+          <div class="scene__paper side-note">
+            <div class="scene__badge">05</div>
+            <p class="eyebrow">important side quest</p>
+            <h3 class="scene__title">A necessary interruption.</h3>
+            <p class="scene__body">
+              Attack on Titan is still one of the greatest things ever made. This page would
+              be structurally incomplete if that was not stated somewhere with confidence.
+            </p>
+            <div class="verdict-box">
+              <div class="verdict-box__stamp">official ruling</div>
+              <p class="verdict-box__line">Attack on Titan: peak.</p>
+              <p class="verdict-box__line verdict-box__line--muted">Attack on Mid: rejected.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="scene" data-scene="sticker" data-title="Sticker gallery">
+          <div class="scene__paper">
+            <div class="scene__badge">06</div>
+            <p class="eyebrow">sticker gallery</p>
+            <h3 class="scene__title">This had to stay. It is basically part of the lore.</h3>
+            <div class="sticker-stage">
+              <button class="sticker-frame" id="stickerZoomBtn" type="button" aria-haspopup="dialog">
+                <span class="tape tape--left" aria-hidden="true"></span>
+                <img src="sticker.webp" alt="Sticker memory" class="sticker-image" />
+                <span class="tape tape--right" aria-hidden="true"></span>
+              </button>
+              <div class="sticker-caption">
+                <p>Click the sticker for a closer look.</p>
+                <p>Some things only get funnier and better with time.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="scene" data-scene="wish-wall" data-title="Wish wall">
+          <div class="scene__paper">
+            <div class="scene__badge">07</div>
+            <p class="eyebrow">wish wall</p>
+            <h3 class="scene__title">Pick the energy this year deserves.</h3>
+            <div class="wish-grid">
+              <button class="wish-card is-selected" type="button" data-wish="peace">
+                <span class="wish-card__title">Peace</span>
+                <span class="wish-card__body">The kind that quietly stays.</span>
+              </button>
+              <button class="wish-card" type="button" data-wish="luck">
+                <span class="wish-card__title">Luck</span>
+                <span class="wish-card__body">The absurdly convenient kind.</span>
+              </button>
+              <button class="wish-card" type="button" data-wish="clarity">
+                <span class="wish-card__title">Clarity</span>
+                <span class="wish-card__body">So the good choices feel obvious.</span>
+              </button>
+              <button class="wish-card" type="button" data-wish="chaos">
+                <span class="wish-card__title">Controlled chaos</span>
+                <span class="wish-card__body">Enough fun to keep life interesting.</span>
+              </button>
+            </div>
+            <div class="wish-result" id="wishResult">
+              Current pick: peace. May this year feel lighter, steadier, and kinder than the
+              last one.
+            </div>
+          </div>
+        </article>
+
+        <article class="scene" data-scene="countdown" data-title="Final setup">
+          <div class="scene__paper">
+            <div class="scene__badge">08</div>
+            <p class="eyebrow">final setup</p>
+            <h3 class="scene__title">One last thing before the ending.</h3>
+            <p class="scene__body">
+              Press the button when you are ready for the dramatic but still tasteful finale.
+            </p>
+            <button class="big-button" id="finalPrepBtn" type="button">Make the wish</button>
+            <div class="countdown" id="countdownText" aria-live="polite">
+              Waiting for your cue.
+            </div>
+          </div>
+        </article>
+
+        <article class="scene" data-scene="finale" data-title="Birthday wish" data-final="true">
+          <div class="scene__paper finale">
+            <div class="scene__badge">09</div>
+            <p class="eyebrow">birthday wish</p>
+            <h3 class="scene__title finale__title" id="finalTitle">Happy Birthday, Mansi</h3>
+            <p class="finale__body" id="finalMessage">
+              May what you keep hoping for find its way to you with surprising accuracy.
+              May your year have better timing, softer days, louder laughs, and fewer things
+              that drain you for no reason.
+            </p>
+            <div class="finale__actions">
+              <button class="soft-button" id="replayFinalBtn" type="button">Replay celebration</button>
+              <button class="ghost-button" id="jumpStartBtn" type="button">Back to the start</button>
+            </div>
+            <div class="ribbon" id="finalRibbon">made with embarrassing sincerity</div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="overviewModal" hidden>
+    <div class="modal__backdrop" data-close-modal="overview"></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="overviewTitle">
+      <button class="modal__close" type="button" data-close-modal="overview">Close</button>
+      <p class="eyebrow">why this version</p>
+      <h2 class="modal__title" id="overviewTitle">A fuller, cleaner version of the original page.</h2>
+      <p>
+        The older site already had a sweet core. This version keeps that feeling, but gives
+        it more shape: clearer chapters, more breathing room, better navigation, and a few
+        interactions that make it feel like a proper little experience instead of a single note.
+      </p>
+      <p>
+        Everything is now easier to edit too, so adding future slides or changing lines is
+        much less painful.
+      </p>
+    </div>
+  </div>
+
+  <div class="modal" id="stickerModal" hidden>
+    <div class="modal__backdrop" data-close-modal="sticker"></div>
+    <div class="modal__dialog modal__dialog--image" role="dialog" aria-modal="true" aria-labelledby="stickerTitle">
+      <button class="modal__close" type="button" data-close-modal="sticker">Close</button>
+      <p class="eyebrow">sticker view</p>
+      <h2 class="modal__title" id="stickerTitle">Certified scrapbook evidence.</h2>
+      <img src="sticker.webp" alt="Sticker close-up" class="modal__image" />
+    </div>
+  </div>
+</body>
+</html>
