@@ -1,24 +1,4 @@
-const scenes = Array.from(document.querySelectorAll(".scene"));
-const chapterNav = document.getElementById("chapterNav");
-const progressLabel = document.getElementById("progressLabel");
-const progressMeta = document.getElementById("progressMeta");
-const nextBtn = document.getElementById("nextBtn");
-const backBtn = document.getElementById("backBtn");
-const toggleThemeBtn = document.getElementById("toggleThemeBtn");
-const toggleDoodlesBtn = document.getElementById("toggleDoodlesBtn");
-const openOverviewBtn = document.getElementById("openOverviewBtn");
-const stickerZoomBtn = document.getElementById("stickerZoomBtn");
-const finalPrepBtn = document.getElementById("finalPrepBtn");
-const countdownText = document.getElementById("countdownText");
-const replayFinalBtn = document.getElementById("replayFinalBtn");
-const jumpStartBtn = document.getElementById("jumpStartBtn");
-const letterToggleBtn = document.getElementById("letterToggleBtn");
-const letterSheet = document.getElementById("letterSheet");
-const memoryPanel = document.getElementById("memoryPanel");
-const wishResult = document.getElementById("wishResult");
-const typeTarget = document.getElementById("typeTarget");
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
+// --- Application State and Data ---
 const memoryCopy = [
   "Looking back, those calls have a soft kind of nostalgia now. Not loud, not cinematic, just the kind that makes life feel temporarily calm again.",
   "Even the rougher moments matter because they proved the bond could survive discomfort without collapsing into bitterness.",
@@ -32,236 +12,299 @@ const wishCopy = {
   chaos: "Current pick: controlled chaos. May life stay fun, surprising, and mostly harmless."
 };
 
-let activeIndex = 0;
-let typingDone = false;
+let typeWriterTriggered = false;
 
-function buildNav() {
+// --- Initialize GSAP and ScrollTrigger ---
+gsap.registerPlugin(ScrollTrigger);
+
+// Remove preload class after a short delay to allow loader animation
+document.addEventListener("DOMContentLoaded", () => {
+  // Loading Sequence
+  const loader = document.getElementById('loader');
+  const loaderBar = document.getElementById('loaderBar');
+
+  // Simulate loading
+  let progress = 0;
+  const loadInterval = setInterval(() => {
+    progress += Math.random() * 15;
+    if (progress > 100) progress = 100;
+    loaderBar.style.width = `${progress}%`;
+
+    if (progress === 100) {
+      clearInterval(loadInterval);
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+          document.body.classList.remove('preload');
+          initAnimations();
+        }, 1000);
+      }, 500);
+    }
+  }, 100);
+
+  // Build ODM Rail Navigation
+  buildNavigation();
+
+  // Setup Interactions
+  setupInteractions();
+
+  // Setup Particles
+  createSparks();
+});
+
+// --- Core Animations Setup ---
+function initAnimations() {
+  const scenes = document.querySelectorAll('.scene');
+
+  // Scroll Progress tied to Gas Level
+  ScrollTrigger.create({
+    trigger: document.body,
+    start: "top top",
+    end: "bottom bottom",
+    onUpdate: (self) => {
+      document.getElementById('scrollProgress').style.height = `${self.progress * 100}%`;
+    }
+  });
+
+  // Scene Reveal Animations
   scenes.forEach((scene, index) => {
-    const button = document.createElement("button");
-    button.className = "chapter-link";
-    button.type = "button";
-    button.dataset.index = String(index);
-    button.innerHTML = `
-      <span class="chapter-link__index">${String(index + 1).padStart(2, "0")}</span>
-      <span class="chapter-link__label">${scene.dataset.title}</span>
-    `;
-    button.addEventListener("click", () => updateScene(index));
-    chapterNav.appendChild(button);
+    // Highlight nav dot
+    ScrollTrigger.create({
+      trigger: scene,
+      start: "top center",
+      end: "bottom center",
+      onToggle: (self) => {
+        if(self.isActive) {
+          document.querySelectorAll('.chapter-dot').forEach((dot, i) => {
+            dot.classList.toggle('active', i === index);
+          });
+
+          // Trigger typewriter on Opening Note scene
+          if(scene.id === 'scene-opening' && !typeWriterTriggered) {
+            runTypewriter();
+            typeWriterTriggered = true;
+          }
+        }
+      }
+    });
+
+    // Elements reveal within scene
+    const card = scene.querySelector('.dossier-card');
+    if (card) {
+      gsap.fromTo(card,
+        { y: 50, opacity: 0, scale: 0.95 },
+        {
+          y: 0, opacity: 1, scale: 1,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: scene,
+            start: "top 80%",
+          }
+        }
+      );
+    }
+  });
+
+  // Parallax on Doodles
+  gsap.utils.toArray('.doodle').forEach(doodle => {
+    gsap.to(doodle, {
+      y: -50,
+      ease: "none",
+      scrollTrigger: {
+        trigger: doodle.parentElement,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: true
+      }
+    });
   });
 }
 
-function updateScene(nextIndex) {
-  if (nextIndex < 0 || nextIndex >= scenes.length) {
-    return;
-  }
-
-  activeIndex = nextIndex;
+// --- Navigation Builder ---
+function buildNavigation() {
+  const chapterNav = document.getElementById('chapterNav');
+  const scenes = document.querySelectorAll('.scene');
 
   scenes.forEach((scene, index) => {
-    const isActive = index === activeIndex;
-    scene.classList.toggle("is-active", isActive);
-    scene.setAttribute("aria-hidden", String(!isActive));
+    const dot = document.createElement('div');
+    dot.className = 'chapter-dot';
+    dot.title = scene.getAttribute('data-title');
+    dot.addEventListener('click', () => {
+      scene.scrollIntoView({ behavior: 'smooth' });
+    });
+    chapterNav.appendChild(dot);
   });
-
-  Array.from(chapterNav.children).forEach((link, index) => {
-    link.classList.toggle("is-active", index === activeIndex);
-  });
-
-  const activeScene = scenes[activeIndex];
-  progressLabel.textContent = activeScene.dataset.title;
-  progressMeta.textContent = `${activeIndex + 1} / ${scenes.length}`;
-  backBtn.disabled = activeIndex === 0;
-  nextBtn.disabled = activeIndex === scenes.length - 1;
-
-  if (activeScene.dataset.scene === "opening" && !typingDone) {
-    runTypewriter();
-  }
-
-  if (activeScene.dataset.final === "true") {
-    runCelebration();
-  }
 }
+
+// --- Interaction Handlers ---
+function setupInteractions() {
+  // Target Pills (Bond section)
+  const pills = document.querySelectorAll('.target-pill');
+  pills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      pills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+
+      // Small glitch effect on click
+      gsap.fromTo(pill,
+        { x: -5 }, { x: 0, duration: 0.1, yoyo: true, repeat: 3 }
+      );
+    });
+  });
+
+  // Timeline Nodes (Archive section)
+  const tNodes = document.querySelectorAll('.t-node');
+  const memoryPanel = document.getElementById('memoryPanel');
+  tNodes.forEach(node => {
+    node.addEventListener('click', () => {
+      tNodes.forEach(n => n.classList.remove('active'));
+      node.classList.add('active');
+
+      const index = parseInt(node.getAttribute('data-index'));
+
+      // Typewriter-ish reveal for memory
+      gsap.to(memoryPanel, {opacity: 0, duration: 0.2, onComplete: () => {
+        memoryPanel.textContent = memoryCopy[index];
+        gsap.to(memoryPanel, {opacity: 1, duration: 0.2});
+      }});
+    });
+  });
+
+  // Wish Tactical Grid
+  const tacCards = document.querySelectorAll('.tac-card');
+  const wishResult = document.getElementById('wishResult');
+  tacCards.forEach(card => {
+    card.addEventListener('click', () => {
+      tacCards.forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+
+      const wish = card.getAttribute('data-wish');
+      const text = wishCopy[wish] || wishCopy.peace;
+
+      wishResult.innerHTML = `<span class="readout-label">SYSTEM MESSAGE:</span> ${text}`;
+
+      // flash effect
+      gsap.fromTo(wishResult, { backgroundColor: '#d94141' }, { backgroundColor: '#050505', duration: 0.5 });
+    });
+  });
+
+  // Titan Shift Button
+  const shiftBtn = document.getElementById('shiftBtn');
+  shiftBtn.addEventListener('click', triggerTitanShift);
+
+  // Coordinate Button (Finale)
+  const coordinateBtn = document.getElementById('coordinateBtn');
+  coordinateBtn.addEventListener('click', activateCoordinate);
+}
+
+// --- Special Effects ---
 
 function runTypewriter() {
-  if (!typeTarget || typingDone) {
-    return;
-  }
+  const target = document.getElementById('typeTarget');
+  if (!target) return;
 
-  const fullText = typeTarget.textContent.trim();
-  typeTarget.textContent = "";
-  typeTarget.classList.add("is-typing");
+  const text = target.textContent.trim();
+  target.textContent = '';
 
-  if (reducedMotion) {
-    typeTarget.textContent = fullText;
-    typeTarget.classList.remove("is-typing");
-    typingDone = true;
-    return;
-  }
+  let i = 0;
+  const speed = 30;
 
-  let cursor = 0;
-
-  function step() {
-    cursor += 1;
-    typeTarget.textContent = fullText.slice(0, cursor);
-
-    if (cursor < fullText.length) {
-      window.setTimeout(step, 18 + Math.random() * 20);
-      return;
+  function type() {
+    if (i < text.length) {
+      target.textContent += text.charAt(i);
+      i++;
+      setTimeout(type, speed + (Math.random() * 20));
     }
-
-    typeTarget.classList.remove("is-typing");
-    typingDone = true;
   }
-
-  step();
+  type();
 }
 
-function toggleModal(modalId, shouldOpen) {
-  const modal = document.getElementById(modalId);
-  if (!modal) {
-    return;
-  }
+function triggerTitanShift() {
+  const flash = document.getElementById('lightningFlash');
 
-  modal.hidden = !shouldOpen;
-  document.body.classList.toggle("modal-open", shouldOpen);
-}
+  // Lightning strike sequence
+  const tl = gsap.timeline();
+  tl.to(flash, { opacity: 1, background: '#ffd700', duration: 0.05 })
+    .to(flash, { opacity: 0, duration: 0.1 })
+    .to(flash, { opacity: 0.8, duration: 0.05 })
+    .to(flash, { opacity: 0, duration: 0.5 });
 
-function runCountdown() {
-  const steps = ["3...", "2...", "1...", "Wish locked in."];
-  let current = 0;
-  countdownText.textContent = steps[current];
-
-  if (reducedMotion) {
-    countdownText.textContent = steps[steps.length - 1];
-    updateScene(scenes.length - 1);
-    return;
-  }
-
-  const timer = window.setInterval(() => {
-    current += 1;
-    countdownText.textContent = steps[current];
-
-    if (current === steps.length - 1) {
-      window.clearInterval(timer);
-      window.setTimeout(() => updateScene(scenes.length - 1), 380);
-    }
-  }, 650);
-}
-
-function runCelebration() {
-  if (typeof window.confetti !== "function") {
-    return;
-  }
-
-  const burst = (particleCount, spread, originY) => {
-    window.confetti({
-      particleCount,
-      spread,
-      startVelocity: 32,
-      scalar: 0.95,
-      origin: { y: originY },
-      colors: ["#bb5c45", "#ffd0b4", "#f6d7bd", "#8f3d2d"]
-    });
-  };
-
-  burst(reducedMotion ? 40 : 90, 110, 0.65);
-  window.setTimeout(() => burst(reducedMotion ? 24 : 70, 180, 0.55), 200);
-  window.setTimeout(() => burst(reducedMotion ? 12 : 50, 240, 0.4), 420);
-}
-
-buildNav();
-updateScene(0);
-
-nextBtn.addEventListener("click", () => updateScene(activeIndex + 1));
-backBtn.addEventListener("click", () => updateScene(activeIndex - 1));
-
-document.addEventListener("keydown", (event) => {
-  const isTypingField = ["input", "textarea"].includes(
-    document.activeElement?.tagName?.toLowerCase() || ""
+  // Shake body
+  gsap.fromTo(document.body,
+    { x: -10, y: 5 },
+    { x: 10, y: -5, duration: 0.05, yoyo: true, repeat: 10, ease: "none", onComplete: () => {
+      gsap.set(document.body, {x:0, y:0});
+    }}
   );
+}
 
-  if (isTypingField) {
-    return;
+function activateCoordinate() {
+  // Show Paths Background
+  const pathsBg = document.getElementById('pathsBg');
+  gsap.to(pathsBg, { opacity: 1, duration: 2 });
+
+  // Confetti (Coordinate Light style)
+  if (window.confetti) {
+    const duration = 3000;
+    const end = Date.now() + duration;
+
+    (function frame() {
+      confetti({
+        particleCount: 5,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#93c5fd', '#f2e8c9']
+      });
+      confetti({
+        particleCount: 5,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#93c5fd', '#f2e8c9']
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    }());
   }
+}
 
-  if (event.key === "ArrowRight") {
-    updateScene(activeIndex + 1);
+function createSparks() {
+  const container = document.getElementById('sparksContainer');
+  if(!container) return;
+
+  for(let i=0; i<30; i++) {
+    const spark = document.createElement('div');
+    spark.style.position = 'absolute';
+    spark.style.width = Math.random() * 3 + 1 + 'px';
+    spark.style.height = spark.style.width;
+    spark.style.backgroundColor = '#d94141';
+    spark.style.borderRadius = '50%';
+    spark.style.filter = 'blur(1px)';
+    spark.style.opacity = Math.random();
+
+    // Random starting position
+    const startX = Math.random() * window.innerWidth;
+    const startY = Math.random() * window.innerHeight + window.innerHeight;
+
+    spark.style.left = startX + 'px';
+    spark.style.top = startY + 'px';
+
+    container.appendChild(spark);
+
+    // Animate upward
+    gsap.to(spark, {
+      y: - (window.innerHeight * 1.5),
+      x: `+=${Math.random() * 200 - 100}`,
+      opacity: 0,
+      duration: Math.random() * 10 + 5,
+      repeat: -1,
+      ease: "none",
+      delay: Math.random() * 5
+    });
   }
-
-  if (event.key === "ArrowLeft") {
-    updateScene(activeIndex - 1);
-  }
-
-  if (event.key === "Escape") {
-    toggleModal("overviewModal", false);
-    toggleModal("stickerModal", false);
-  }
-});
-
-document.querySelector(".slide-deck").addEventListener("click", (event) => {
-  if (
-    event.target.closest("button") ||
-    event.target.closest(".modal") ||
-    event.target.closest(".letter-sheet")
-  ) {
-    return;
-  }
-
-  updateScene(Math.min(activeIndex + 1, scenes.length - 1));
-});
-
-toggleThemeBtn.addEventListener("click", () => {
-  document.body.classList.toggle("theme-night");
-});
-
-toggleDoodlesBtn.addEventListener("click", () => {
-  document.body.classList.toggle("doodles-off");
-});
-
-openOverviewBtn.addEventListener("click", () => toggleModal("overviewModal", true));
-stickerZoomBtn.addEventListener("click", () => toggleModal("stickerModal", true));
-
-document.querySelectorAll("[data-close-modal]").forEach((button) => {
-  button.addEventListener("click", () => {
-    const modalName = button.getAttribute("data-close-modal");
-    toggleModal(`${modalName}Modal`, false);
-  });
-});
-
-document.querySelectorAll(".pill").forEach((pill) => {
-  pill.addEventListener("click", () => {
-    document.querySelectorAll(".pill").forEach((item) => item.classList.remove("is-selected"));
-    pill.classList.add("is-selected");
-  });
-});
-
-document.querySelectorAll(".memory-card").forEach((card) => {
-  card.addEventListener("click", () => {
-    const nextMemory = Number(card.dataset.memory || 0);
-    document
-      .querySelectorAll(".memory-card")
-      .forEach((item) => item.classList.toggle("is-active", item === card));
-    memoryPanel.textContent = memoryCopy[nextMemory];
-  });
-});
-
-letterToggleBtn.addEventListener("click", () => {
-  const willOpen = letterSheet.hidden;
-  letterSheet.hidden = !willOpen;
-  letterToggleBtn.setAttribute("aria-expanded", String(willOpen));
-  letterToggleBtn.textContent = willOpen ? "Fold the note back up" : "Open the folded note";
-});
-
-document.querySelectorAll(".wish-card").forEach((card) => {
-  card.addEventListener("click", () => {
-    const wish = card.dataset.wish;
-    document
-      .querySelectorAll(".wish-card")
-      .forEach((item) => item.classList.toggle("is-selected", item === card));
-    wishResult.textContent = wishCopy[wish] || wishCopy.peace;
-  });
-});
-
-finalPrepBtn.addEventListener("click", runCountdown);
-replayFinalBtn.addEventListener("click", runCelebration);
-jumpStartBtn.addEventListener("click", () => updateScene(0));
+}
